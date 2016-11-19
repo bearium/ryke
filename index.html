@@ -12,32 +12,52 @@
 <script src=http://mrdoob.github.io/three.js/examples/js/controls/OrbitControls.js ></script>
 <script>
   var loop = {};
-  var x = -500, y = 500, z = 500;
+  var x = -500, y = 700, z = 700;
   var info, stats, renderer, scene, camera, controls, light;
   function init() {
+    console.log("Starting init");
     renderer = new THREE.WebGLRenderer( { antialias: true, alpha: 1, clearColor: 0xffffff }  );
     renderer.shadowMap.enabled = true;
     renderer.setSize( window.innerWidth, window.innerHeight );
     document.body.appendChild( renderer.domElement );
     scene = new THREE.Scene();
+    var geometry = new THREE.CubeGeometry(200, 200, 200);
+    var material = new THREE.MeshBasicMaterial({
+      color: 0x0000FF,
+      wireframe: true,
+      wireframeLinewidth: 2
+    });
+    var mesh = new THREE.Mesh(geometry, material);
+    scene.add(mesh);
     camera = new THREE.PerspectiveCamera( 40, window.innerWidth / window.innerHeight, 1, 5000 );
     camera.position.set( x, y, z );
     controls = new THREE.OrbitControls( camera, renderer.domElement );
-    controls.maxDistance = 1000;
+    //controls.maxDistance = 1000;
+    console.log("Starting event loop");
+    Leap.loop(function( frame ) {
+      console.log(frame);
+      if (frame.hands > 0) {
+        var hand = frame.hands[0];
+        // process hard and determine change in position based on that and time since last frame
+      }
+      renderer.render( scene, camera );
+    });
+    setInterval(function () {
+      x += 1;
+      z -= 1;
+      camera.position.x = x;
+      camera.position.z = z;
+      //controls.update();
+    },10);
+    function render() {
+      requestAnimationFrame( render );
+      renderer.render( scene, camera );
+    }
+    render();
+    //controls.update();
+    Leap.loopController.setBackground(true);
   }
   init();
-  function v( x, y, z) { return new THREE.Vector3( x, y, z ); }
-  loop.animate = function( frame ) {
-    if (frame.hands > 0) {
-      var hand = frame.hands[0];
-      // process hard and determine change in position based on that and time since last frame
-    }
-    renderer.render( scene, camera );
-    controls.update();
-    stats.update();
-  };
-  loop = Leap.loop( loop.animate );
-  Leap.loopController.setBackground(true)
 </script>
 </body>
 </html>
