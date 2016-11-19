@@ -24,10 +24,6 @@
     camera.position.set( x, y, z );
     controls = new THREE.OrbitControls( camera, renderer.domElement );
     controls.maxDistance = 1000;
-    toggleGroundBoxLights( 500 );
-    toggleAxis( 250 );
-    toggleGradient();
-    addLights( 300 );
   }
   init();
   function v( x, y, z) { return new THREE.Vector3( x, y, z ); }
