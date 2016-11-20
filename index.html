@@ -166,7 +166,7 @@
     }
 
     function initSocket() {
-      socket = io();
+      socket = io('http://ryke.xyz', {resource: 'socket'});
     }
 
     function sendLocation() {
