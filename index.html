@@ -17,15 +17,52 @@
 <script src="https://mrdoob.github.io/three.js/examples/js/loaders/collada/KeyFrameAnimation.js"></script>
 <script type="text/javascript" src="QuadCalculator.js"></script>
 <script>
-    var x = 0, y = -1000, z = 100;
+    var x = 0, y = -1000, z = 100, id = date.now() ;
     var info, stats, renderer, scene, camera, controls, light, yllwStrc = false;
+
+    class PLayer()
+    {
+        constructor(scene, id)
+        {
+            this.scene = scene;
+            this.id = id
+            this.airplane = false;
+
+
+        }
+
+        setcor(x, y, z, phi)
+        {
+            if (this.airplane == false) return;
+            this.airplane.position.x = x;
+            this.airplane.position.y = y;
+            this.airplane.position.z = z;
+            this.state.direction.spherical.phi;
+        }
+
+        draw()
+        {
+            // initialise loaders
+            var colladaLoader = new THREE.ColladaLoader();
+
+
+            // add university to the model
+            colladaLoader.load('resources/airplane.dae', function (collada) {
+                this.scene.add(collada.scene);
+                this.airplane = collada.scene;
+            })
+        }
+    }
+
+
+
+
     function init() {
         renderer = new THREE.WebGLRenderer({antialias: true, alpha: 1, clearColor: 0xffffff});
         renderer.shadowMap.enabled = true;
         renderer.setSize(window.innerWidth, window.innerHeight);
         document.body.appendChild(renderer.domElement);
         scene = new THREE.Scene();
-
         // Alerts have been activated
         var yllwStrc = false;
         var ghandi = false;
