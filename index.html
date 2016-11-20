@@ -108,10 +108,10 @@
                 var material = new THREE.MeshBasicMaterial({
                     map: texture
                 });
-                var geometry = new THREE.PlaneGeometry(1100, 1100);
+                var geometry = new THREE.PlaneGeometry(1100, 1200);
                 var plane = new THREE.Mesh(geometry, material);
                 plane.rotation.z = Math.PI / 60;
-                plane.position.x = -100;
+                plane.position.x = -80;
                 plane.position.y = -50;
                 scene.add(plane);
 
