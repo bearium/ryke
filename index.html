@@ -39,8 +39,8 @@
     var loader = new THREE.TextureLoader();
 
     // add university to the model
-    colladaLoader.load('resources/CarletonUniversity4.dae', function (collada) {
-      scene.add(collada.scene);
+    colladaLoader.load('resources/CarletonUniversity5.dae', function (collada) {
+      setTimeout(function() {scene.add(collada.scene);}, 2000);
     });
 
     // load a resource
@@ -75,7 +75,6 @@
     camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 1, 5000);
     camera.position.set(x, y, z);
     controls = new THREE.OrbitControls(camera, renderer.domElement);
-    //controls.maxDistance = 1000;
     console.log("Starting event loop");
     Leap.loop({}, function(frame) {
       update_state(frame);
