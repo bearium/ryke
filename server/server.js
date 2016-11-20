@@ -12,10 +12,12 @@ server.listen(port, function () {
 // var numUsers = 0;
 
 io.on('connection', function (socket) {
-  var addedUser = false;
+  console.log("new connection");
+  // var addedUser = false;
 
   // when the client emits 'new message', this listens and executes
   socket.on('new location', function (data) {
+    console.log("new location information from id: " + data.id);
     // we tell the client to execute 'new location'
     socket.broadcast.emit('new location', data);
   });
