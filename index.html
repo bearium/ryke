@@ -43,16 +43,14 @@
     controls = new THREE.OrbitControls(camera, renderer.domElement);
     //controls.maxDistance = 1000;
     console.log("Starting event loop");
-    Leap.loop({}, update_state);
-
-    setTimeout(function () {
-      setInterval(function () {
-        camera.position.x = state.location.x;
-        camera.position.y = state.location.x;
-        camera.position.y = state.location.x;
-        //controls.update();
-      }, 10);
-    }, 3000);
+    Leap.loop({}, function(frame) {
+      update_state(frame);
+      console.log(camera);
+      camera.position.x = state.location.x;
+      camera.position.y = state.location.y;
+      camera.position.z = state.location.z;
+      camera.rotation.set(state.direction.cartesian.x, state.direction.cartesian.y, state.direction.cartesian.z);
+    });
     function render() {
       requestAnimationFrame(render);
       renderer.render(scene, camera);
