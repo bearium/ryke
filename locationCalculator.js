@@ -22,11 +22,11 @@ var previousFrame = null;
 function update_state(frame) {
     if (frame["hands"].length != 0) {
 
-        hand = frame["hands"][0];
-        grabStrength = hand.grabStrength;
-        palmNormal = hand.palmNormal;
-        pitch = hand.pitch();
-        roll = hand.roll();
+        var hand = frame["hands"][0];
+        var grabStrength = hand.grabStrength;
+        var palmNormal = hand.palmNormal;
+        var pitch = hand.pitch();
+        var roll = hand.roll();
         var speed = (1 - grabStrength);
         var time = frame.timestamp - (previousFrame ? previousFrame.timestamp : frame.timestamp);
 
@@ -61,7 +61,7 @@ function update_state(frame) {
         // console.log("x: "+cartesian["x"]+", y: "+cartesian["y"]+"z: "+cartesian["z"]);
 
         console.assert(Math.abs(Math.pow(cartesian["x"], 2) + Math.pow(cartesian["y"], 2) + Math.pow(cartesian["z"], 2)) - 1 < 0.000001);
-        var speed = (1 - grabStrength) * time/1000;
+        speed = (1 - grabStrength) * time/1000;
 
         var location = state["location"];
         location["x"] += speed * cartesian["x"];
