@@ -15,128 +15,185 @@
 <script src="https://mrdoob.github.io/three.js/examples/js/loaders/collada/Animation.js"></script>
 <script src="https://mrdoob.github.io/three.js/examples/js/loaders/collada/AnimationHandler.js"></script>
 <script src="https://mrdoob.github.io/three.js/examples/js/loaders/collada/KeyFrameAnimation.js"></script>
+<script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
 <script type="text/javascript" src="QuadCalculator.js"></script>
 <script>
-  var x = 0, y = -1000, z = 100;
-  var info, stats, renderer, scene, camera, controls, light, yllwStrc = false;
-  function init() {
-    console.log("Starting init");
-    renderer = new THREE.WebGLRenderer({ antialias: true, alpha: 1, clearColor: 0xffffff });
-    renderer.shadowMap.enabled = true;
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    document.body.appendChild(renderer.domElement);
-    scene = new THREE.Scene();
-    var yllwStrc = false;
+    var x = 0, y = -1000, z = 100, id = Date.now() ;
+    var players = [];
+    var info, stats, socket, renderer, scene, camera, controls, light, yllwStrc = false, lastSend = Date.now();
 
-    /*
-    // add cube to the model
-    var geometry = new THREE.CubeGeometry(200, 200, 200);
-    var material = new THREE.MeshBasicMaterial({
-      color: 0x0000FF,
-      wireframe: true,
-      wireframeLinewidth: 2
-    });
-    var mesh = new THREE.Mesh(geometry, material);
-    scene.add(mesh);
-    */
+    class Player {
+        constructor(scene, id)
+        {
+            this.scene = scene;
+            this.id = id;
+            this.airplane = false;
+            this.draw();
+        }
 
+        setCords(x, y, z, phi)
+        {
+            if (this.airplane == false) return;
+            this.airplane.position.x = x;
+            this.airplane.position.y = y;
+            this.airplane.position.z = z;
+            if (phi) {
+              this.state.direction.spherical.phi = phi;
+            }
+        }
 
-    /*
-    var urlPrefix = "resources/sky/";
-    var urls = [urlPrefix + "posx.jpg", urlPrefix + "negx.jpg", urlPrefix + "posy.jpg", urlPrefix + "negy.jpg", urlPrefix + "posz.jpg", urlPrefix + "negz.jpg"];
-    var textureCube= THREE.ImageUtils.loadTextureCube(urls);
+        draw()
+        {
+            // initialise loaders
+            var colladaLoader = new THREE.ColladaLoader();
 
-    var shader = THREE.ShaderLib["cube"];
-    var uniforms = THREE.UniformsUtils.clone(shader.uniforms);
-    uniforms['tCube'].texture = textureCube;
-    var material = new THREE.ShaderMaterial({
-        fragmentShader : shader.fragmentShader,
-        vertexShader :shader.vertexShader,
-        uniforms : uniforms
-    });
-
-    var skyBoxMesh = new THREE.Mesh(new THREE.CubeGeometry(100, 100, 100, -100, -100, -100, null, true), material);
-    scene.add(skyBoxMesh);*/
-
-    document.body.style.backgroundColor = "lightBlue";
+            // add university to the model
+            colladaLoader.load('resources/airplane.dae', function (collada) {
+                this.scene.add(collada.scene);
+                this.airplane = collada.scene;
+            })
+        }
+    }
 
 
-    // initialise loaders
-    var colladaLoader = new THREE.ColladaLoader();
-    var loader = new THREE.TextureLoader();
-
-    // add university to the model
-    colladaLoader.load('resources/CarletonUniversity5.dae', function (collada) {
-      setTimeout(function() {scene.add(collada.scene);}, 2000);
-    });
-
-    var light = new THREE.PointLight(0xffffff);
-    light.position.set(-100, 200, 100);
-    scene.add(light);
-
-    light = new THREE.PointLight(0xffffff);
-    light.position.set(x, y, z);
-    scene.add(light);
 
 
-    // load a resource
-    loader.load(
-      // resource URL
-      'resources/surface.png',
-      // Function when resource is loaded
-      function ( texture ) {
-        // do something with the texture
-        var material = new THREE.MeshBasicMaterial( {
-          map: texture
-        } );
-        var geometry = new THREE.PlaneGeometry( 1200, 1100 );
-        var plane = new THREE.Mesh( geometry, material );
+    function init() {
+        renderer = new THREE.WebGLRenderer({antialias: true, alpha: 1, clearColor: 0xffffff});
+        renderer.shadowMap.enabled = true;
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+        scene = new THREE.Scene();
+        // Alerts have been activated
+        var yllwStrc = false;
+        var ghandi = false;
+
+        document.body.style.backgroundColor = "lightBlue";
+
+        addUniversity(scene);
+
+
+        var light = new THREE.PointLight(0xffffff);
+        light.position.set(-100, 200, 100);
+        scene.add(light);
+
+        light = new THREE.PointLight(0xffffff);
+        light.position.set(x, y, z);
+        scene.add(light);
+
+        var loader = new THREE.TextureLoader();
+
+        // Create a grass field
+        var material = new THREE.MeshBasicMaterial({
+            color: "green"
+        });
+        var geometry = new THREE.PlaneGeometry(12000, 11000);
+        var plane = new THREE.Mesh(geometry, material);
         plane.rotation.z = Math.PI / 8;
         plane.position.x = -20;
         plane.position.y = 65;
-        scene.add( plane );
-      },
-      // Function called when download progresses
-      function ( xhr ) {
-        console.log( (xhr.loaded / xhr.total * 100) + '% loaded' );
-      },
-      // Function called when download errors
-      function ( xhr ) {
-        console.log( 'An error happened' );
-      }
-    );
+        plane.position.z = -1;
+        scene.add(plane);
 
-    var axisHelper = new THREE.AxisHelper(1000);
-    scene.add(axisHelper);
-    camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 1, 5000);
-    camera.position.set(x, y, z);
-    controls = new THREE.OrbitControls(camera, renderer.domElement);
-    //console.log("Starting event loop");
-    Leap.loop({}, function(frame) {
-      update_state(frame);
-      camera.position.x = state.location.x;
-      camera.position.y = state.location.y;
-      camera.position.z = state.location.z;
-      light.position.set(camera.position.x, camera.position.y, camera.position.z);
-      camera.rotation.y = state.direction.spherical.phi;
-      camera.rotation.x = Math.PI / 2;
-      // + Math.cos(state.direction.spherical.phi) * state.direction.spherical.theta / 3;
-      camera.rotation.z = 0; // + Math.sin(state.direction.spherical.phi) * state.direction.spherical.theta / 3;
-      if((camera.position.x > -60)&&(camera.position.x < -30)&&(camera.position.z > 10)&&(camera.position.z < 40)&&(yllwStrc === false)){
-        yllwStrc = true;
-        alert("Yellow Structure, by Civils, for Civils.");
-      }
-    });
-    function render() {
-      requestAnimationFrame(render);
-      renderer.render(scene, camera);
+        // load a resource
+        loader.load(
+            // resource URL
+            'resources/surface.png',
+            // Function when resource is loaded
+            function (texture) {
+                // do something with the texture
+
+
+                var material = new THREE.MeshBasicMaterial({
+                    map: texture
+                });
+                var geometry = new THREE.PlaneGeometry(1200, 1100);
+                var plane = new THREE.Mesh(geometry, material);
+                plane.rotation.z = Math.PI / 8;
+                plane.position.x = -20;
+                plane.position.y = 65;
+                scene.add(plane);
+
+
+            },
+            // Function called when download progresses
+            function (xhr) {
+                console.log((xhr.loaded / xhr.total * 100) + '% loaded');
+            },
+            // Function called when download errors
+            function (xhr) {
+                console.log('An error happened');
+            }
+        );
+
+        var axisHelper = new THREE.AxisHelper(1000);
+        scene.add(axisHelper);
+        camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 1, 5000);
+        camera.position.set(x, y, z);
+        controls = new THREE.OrbitControls(camera, renderer.domElement);
+
+        Leap.loop({}, function (frame) {
+            update_state(frame);
+            camera.position.x = state.location.x;
+            camera.position.y = state.location.y;
+            camera.position.z = state.location.z;
+            light.position.set(camera.position.x, camera.position.y, camera.position.z);
+            camera.rotation.y = state.direction.spherical.phi;
+            camera.rotation.x = Math.PI / 2;
+            // + Math.cos(state.direction.spherical.phi) * state.direction.spherical.theta / 3;
+            camera.rotation.z = 0; // + Math.sin(state.direction.spherical.phi) * state.direction.spherical.theta / 3;
+
+            if ((camera.position.x > -225) && (camera.position.x < -195) && (camera.position.y > -85) &&
+              (camera.position.y < -55) && (yllwStrc === false)) {
+                yllwStrc = true;
+                alert("Yellow Structure, by Civils, for Civils.");
+            }
+            if ((camera.position.x > -95) && (camera.position.x < -75) && (camera.position.y > -330) &&
+                (camera.position.y < -310) && (ghandi === false)) {
+                ghandi = true;
+                alert("Ghandi.");
+            }
+        });
+        function render() {
+            requestAnimationFrame(render);
+            renderer.render(scene, camera);
+        }
+
+        render();
+        //controls.update();
+        Leap.loopController.setBackground(true);
     }
 
-    render();
-    //controls.update();
-    Leap.loopController.setBackground(true);
-  }
-  init();
+    function initSocket() {
+      socket = io();
+    }
+
+    function sendLocation() {
+      socket.emit('new location', JSON.stringify({x: state.location.x, y: state.location.y, z: state.location.z}));
+    }
+
+    function onNewLocation(location) {
+      let player = players[location.id];
+      if (!player) {
+        players[location.id] = new Player(scene)
+      }
+      player.setCords(location.x, location.y, locatiov.z)
+    }
+
+    function addUniversity(scene){
+        // initialise loaders
+        var colladaLoader = new THREE.ColladaLoader();
+
+
+        // add university to the model
+        colladaLoader.load('resources/CarletonUniversity5.dae', function (collada) {
+            setTimeout(function () {
+                scene.add(collada.scene);
+            }, 2000);
+        });
+    }
+
+    init();
 </script>
 </body>
 </html>
