@@ -86,7 +86,18 @@
       // Function when resource is loaded
       function ( texture ) {
         // do something with the texture
-        var material = new THREE.MeshBasicMaterial( {
+          var material = new THREE.MeshBasicMaterial( {
+              color: "green"
+          } );
+          var geometry = new THREE.PlaneGeometry( 12000, 11000 );
+          var plane = new THREE.Mesh( geometry, material );
+          plane.rotation.z = Math.PI / 8;
+          plane.position.x = -20;
+          plane.position.y = 65;
+          plane.position.z = -1;
+          scene.add( plane );
+
+          var material = new THREE.MeshBasicMaterial( {
           map: texture
         } );
         var geometry = new THREE.PlaneGeometry( 1200, 1100 );
@@ -95,6 +106,8 @@
         plane.position.x = -20;
         plane.position.y = 65;
         scene.add( plane );
+
+
       },
       // Function called when download progresses
       function ( xhr ) {
