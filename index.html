@@ -144,7 +144,7 @@
             // + Math.cos(state.direction.spherical.phi) * state.direction.spherical.theta / 3;
             camera.rotation.z = 0; // + Math.sin(state.direction.spherical.phi) * state.direction.spherical.theta / 3;
 
-            if (lastSend - Date.now() > 100) {
+            if (Date.now() - lastSend > 100) {
               lastSend = Date.now();
               sendLocation();
             }
