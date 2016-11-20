@@ -185,6 +185,7 @@
     }
 
     function onNewLocation(location) {
+      if (id == location.id) return;
       let player = players[location.id];
       if (!player) {
         console.log("Created player");
