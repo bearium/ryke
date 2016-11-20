@@ -31,7 +31,10 @@ function update_state(frame) {
         var time = frame.timestamp - (previousFrame ? previousFrame.timestamp : frame.timestamp);
 
         var spherical = state["direction"]["spherical"];
-        spherical["theta"] -= pitch*time/100000000000000;
+        // If the pitch is within the "dead" zone, no movement in the y axis occurs
+        if (Math.abs(pitch) > 0.2) {
+            spherical["theta"] -= pitch * time / (1000000 * 0.2);
+        }
         if (spherical["theta"] < 0) {
             spherical["theta"] = 0;
         } else if (spherical["theta"] > Math.PI) {
@@ -40,12 +43,13 @@ function update_state(frame) {
 
         // spherical["theta"] = Math.PI/2; // DON'T SUBMIT
 
-        spherical["phi"] += roll*time/500000000000000;
+        spherical["phi"] += roll * time / (1000000 * 250000);
         if (spherical["phi"] < 0) {
-            spherical["phi"] = 2*Math.PI + spherical["phi"];
-        } else if (spherical["phi"] >= 2*Math.PI) {
-            spherical["phi"] = spherical["phi"] % (2*Math.PI);
+            spherical["phi"] = 2 * Math.PI + spherical["phi"];
+        } else if (spherical["phi"] >= 2 * Math.PI) {
+            spherical["phi"] = spherical["phi"] % (2 * Math.PI);
         }
+
 
         // console.log("theta: "+spherical["theta"]+", phi: "+spherical["phi"]);
 
@@ -66,5 +70,8 @@ function update_state(frame) {
 
         console.log("x: "+location["x"]+", y: "+location["y"]+", z: "+location["z"]);
         previousFrame = frame;
+
+        spherical["theta"] = Math.PI/2;
+        // spherical["phi"] = 0;
     }
 }
