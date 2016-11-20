@@ -22,6 +22,8 @@
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
     scene = new THREE.Scene();
+
+    // add cube to the model
     var geometry = new THREE.CubeGeometry(200, 200, 200);
     var material = new THREE.MeshBasicMaterial({
       color: 0x0000FF,
@@ -30,12 +32,40 @@
     });
     var mesh = new THREE.Mesh(geometry, material);
     scene.add(mesh);
-       
-    var colladaLoader = new THREE.ColladaLoader();
 
+    // initialise loaders
+    var colladaLoader = new THREE.ColladaLoader();
+    var loader = new THREE.TextureLoader();
+
+    // add university to the model
     colladaLoader.load('CarletonUniversity2.dae', function (collada) {
       scene.add(collada.scene);
     });
+
+    // load a resource
+    loader.load(
+      // resource URL
+      'resources/surface.png',
+      // Function when resource is loaded
+      function ( texture ) {
+        // do something with the texture
+        var material = new THREE.MeshBasicMaterial( {
+          map: texture
+        } );
+        var geometry = new THREE.PlaneGeometry( 2000, 2000 );
+        var plane = new THREE.Mesh( geometry, material );
+        scene.add( plane );
+      },
+      // Function called when download progresses
+      function ( xhr ) {
+        console.log( (xhr.loaded / xhr.total * 100) + '% loaded' );
+      },
+      // Function called when download errors
+      function ( xhr ) {
+        console.log( 'An error happened' );
+      }
+    );
+
     var axisHelper = new THREE.AxisHelper(1000);
     scene.add(axisHelper);
     camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 1, 5000);
@@ -45,7 +75,6 @@
     console.log("Starting event loop");
     Leap.loop({}, function(frame) {
       update_state(frame);
-      console.log(camera);
       camera.position.x = state.location.x;
       camera.position.y = state.location.y;
       camera.position.z = state.location.z;
