@@ -39,7 +39,7 @@ function update_state(frame) {
       var x = position[0];
       var y = -position[2];
       var z = position[1] - 200;
-      console.log(pitch);
+      // console.log(pitch);
 
       spherical.theta = pitch + Math.PI / 2;
 
