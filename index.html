@@ -47,6 +47,7 @@
             // initialise loaders
             var colladaLoader = new THREE.ColladaLoader();
 
+
             // add university to the model
             colladaLoader.load('resources/airplane.dae', function (collada) {
                 this.scene.add(collada.scene);
@@ -98,7 +99,7 @@
         // load a resource
         loader.load(
             // resource URL
-            'resources/surface.png',
+            'resources/surface2.png',
             // Function when resource is loaded
             function (texture) {
                 // do something with the texture
@@ -107,11 +108,11 @@
                 var material = new THREE.MeshBasicMaterial({
                     map: texture
                 });
-                var geometry = new THREE.PlaneGeometry(1200, 1100);
+                var geometry = new THREE.PlaneGeometry(1100, 1100);
                 var plane = new THREE.Mesh(geometry, material);
-                plane.rotation.z = Math.PI / 8;
-                plane.position.x = -20;
-                plane.position.y = 65;
+                plane.rotation.z = Math.PI / 60;
+                plane.position.x = -100;
+                plane.position.y = -50;
                 scene.add(plane);
 
 
