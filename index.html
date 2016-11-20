@@ -148,11 +148,6 @@
             // + Math.cos(state.direction.spherical.phi) * state.direction.spherical.theta / 3;
             camera.rotation.z = 0; // + Math.sin(state.direction.spherical.phi) * state.direction.spherical.theta / 3;
 
-            if (Date.now() - lastSend > 100) {
-              lastSend = Date.now();
-              sendLocation();
-            }
-
             if ((camera.position.x > -225) && (camera.position.x < -195) && (camera.position.y > -85) &&
               (camera.position.y < -55) && (yllwStrc === false)) {
                 yllwStrc = true;
@@ -167,6 +162,10 @@
         function render() {
             requestAnimationFrame(render);
             renderer.render(scene, camera);
+            if (Date.now() - lastSend > 100) {
+              lastSend = Date.now();
+              sendLocation();
+            }
         }
 
         render();
