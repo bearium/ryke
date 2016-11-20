@@ -12,7 +12,7 @@
 <script src=https://mrdoob.github.io/three.js/examples/js/controls/OrbitControls.js></script>
 <script src=https://mrdoob.github.io/three.js/examples/js/loaders/ColladaLoader.js></script>
 <script src=https://mrdoob.github.io/three.js/examples/js/loaders/OBJLoader.js></script>
-<script type="text/javascript" src="locationCalculator.js"></script>
+<script type="text/javascript" src="QuadCalculator.js"></script>
 <script>
   var x = 0, y = -1000, z = 100;
   var info, stats, renderer, scene, camera, controls, light;
@@ -24,6 +24,7 @@
     document.body.appendChild(renderer.domElement);
     scene = new THREE.Scene();
 
+    /*
     // add cube to the model
     var geometry = new THREE.CubeGeometry(200, 200, 200);
     var material = new THREE.MeshBasicMaterial({
@@ -33,6 +34,7 @@
     });
     var mesh = new THREE.Mesh(geometry, material);
     scene.add(mesh);
+    */
 
     // initialise loaders
     var colladaLoader = new THREE.ColladaLoader();
@@ -81,6 +83,9 @@
       camera.position.x = state.location.x;
       camera.position.y = state.location.y;
       camera.position.z = state.location.z;
+      camera.rotation.y = state.direction.spherical.phi;
+      // camera.rotation.x = Math.sin(state.direction.spherical.phi) * state.direction.spherical.theta / 100;
+      // camera.rotation.z = Math.cos(state.direction.spherical.phi) * state.direction.spherical.theta / 100;
       // camera.rotation.set(state.direction.cartesian.x, state.direction.cartesian.y, state.direction.cartesian.z);
     });
     function render() {
