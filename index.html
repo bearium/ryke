@@ -137,7 +137,8 @@
             camera.rotation.x = Math.PI / 2;
             // + Math.cos(state.direction.spherical.phi) * state.direction.spherical.theta / 3;
             camera.rotation.z = 0; // + Math.sin(state.direction.spherical.phi) * state.direction.spherical.theta / 3;
-            if ((camera.position.x > -60) && (camera.position.x < -30) && (camera.position.z > 10) && (camera.position.z < 40) && (yllwStrc === false)) {
+            if ((camera.position.x > -60) && (camera.position.x < -30) && (camera.position.y > 10) &&
+              (camera.position.y < 40) && (yllwStrc === false)) {
                 yllwStrc = true;
                 alert("Yellow Structure, by Civils, for Civils.");
             }
