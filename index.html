@@ -47,7 +47,6 @@
             // initialise loaders
             var colladaLoader = new THREE.ColladaLoader();
 
-
             // add university to the model
             colladaLoader.load('resources/airplane.dae', function (collada) {
                 this.scene.add(collada.scene);
@@ -184,8 +183,10 @@
       console.log("Got new location ", location);
       let player = players[location.id];
       if (!player) {
-        players[location.id] = new Player(scene)
+        console.log("Created player");
+        players[location.id] = new Player(scene, id)
       }
+      console.log("Setting player coordinates");
       player.setCords(location.x, location.y, location.z)
     }
 
