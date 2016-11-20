@@ -184,7 +184,8 @@
       let player = players[location.id];
       if (!player) {
         console.log("Created player");
-        players[location.id] = new Player(scene, id)
+        player = new Player(scene, id);
+        players[location.id] = player;
       }
       console.log("Setting player coordinates");
       player.setCords(location.x, location.y, location.z)
