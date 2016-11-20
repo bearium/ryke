@@ -47,12 +47,11 @@
             // initialise loaders
             var colladaLoader = new THREE.ColladaLoader();
 
-
             // add university to the model
             colladaLoader.load('resources/airplane.dae', function (collada) {
                 this.scene.add(collada.scene);
                 this.airplane = collada.scene;
-            })
+            }.bind(this))
         }
     }
 
@@ -144,7 +143,7 @@
             // + Math.cos(state.direction.spherical.phi) * state.direction.spherical.theta / 3;
             camera.rotation.z = 0; // + Math.sin(state.direction.spherical.phi) * state.direction.spherical.theta / 3;
 
-            if (lastSend - Date.now() > 100) {
+            if (Date.now() - lastSend > 100) {
               lastSend = Date.now();
               sendLocation();
             }
@@ -176,16 +175,19 @@
     }
 
     function sendLocation() {
-      socket.emit('new location', JSON.stringify({id, x: state.location.x, y: state.location.y, z:
-      state.location.z}));
+      socket.emit('new location', {id, x: state.location.x, y: state.location.y, z:
+      state.location.z});
     }
 
     function onNewLocation(location) {
       console.log("Got new location ", location);
       let player = players[location.id];
       if (!player) {
-        players[location.id] = new Player(scene)
+        console.log("Created player");
+        player = new Player(scene, id);
+        players[location.id] = player;
       }
+      console.log("Setting player coordinates");
       player.setCords(location.x, location.y, location.z)
     }
 
