@@ -181,7 +181,7 @@
 
     function sendLocation() {
       socket.emit('new location', {id, x: state.location.x, y: state.location.y, z:
-      state.location.z, phi: this.state.direction.spherical.phi});
+      state.location.z, phi: state.direction.spherical.phi});
     }
 
     function onNewLocation(location) {
