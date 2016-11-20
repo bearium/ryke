@@ -11,6 +11,7 @@
 <script src=https://mrdoob.github.io/three.js/build/three.min.js></script>
 <script src=https://mrdoob.github.io/three.js/examples/js/controls/OrbitControls.js></script>
 <script src=https://mrdoob.github.io/three.js/examples/js/loaders/ColladaLoader.js></script>
+<script src=https://mrdoob.github.io/three.js/examples/js/loaders/OBJLoader.js></script>
 <script type="text/javascript" src="locationCalculator.js"></script>
 <script>
   var x = 0, y = -1000, z = 100;
@@ -38,7 +39,7 @@
     var loader = new THREE.TextureLoader();
 
     // add university to the model
-    colladaLoader.load('resources/CarletonUniversity3.dae', function (collada) {
+    colladaLoader.load('resources/CarletonUniversity4.dae', function (collada) {
       scene.add(collada.scene);
     });
 
@@ -52,11 +53,11 @@
         var material = new THREE.MeshBasicMaterial( {
           map: texture
         } );
-        var geometry = new THREE.PlaneGeometry( 1500, 1500 );
+        var geometry = new THREE.PlaneGeometry( 1200, 1100 );
         var plane = new THREE.Mesh( geometry, material );
-        plane.rotation.z = Math.PI / 12;
-        plane.position.x = 0;
-        plane.position.y = 160;
+        plane.rotation.z = Math.PI / 8;
+        plane.position.x = -20;
+        plane.position.y = 65;
         scene.add( plane );
       },
       // Function called when download progresses
