@@ -26,6 +26,7 @@
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
     scene = new THREE.Scene();
+    var yllwStrc = false;
 
     /*
     // add cube to the model
@@ -38,6 +39,27 @@
     var mesh = new THREE.Mesh(geometry, material);
     scene.add(mesh);
     */
+
+
+    /*
+    var urlPrefix = "resources/sky/";
+    var urls = [urlPrefix + "posx.jpg", urlPrefix + "negx.jpg", urlPrefix + "posy.jpg", urlPrefix + "negy.jpg", urlPrefix + "posz.jpg", urlPrefix + "negz.jpg"];
+    var textureCube= THREE.ImageUtils.loadTextureCube(urls);
+
+    var shader = THREE.ShaderLib["cube"];
+    var uniforms = THREE.UniformsUtils.clone(shader.uniforms);
+    uniforms['tCube'].texture = textureCube;
+    var material = new THREE.ShaderMaterial({
+        fragmentShader : shader.fragmentShader,
+        vertexShader :shader.vertexShader,
+        uniforms : uniforms
+    });
+
+    var skyBoxMesh = new THREE.Mesh(new THREE.CubeGeometry(100, 100, 100, -100, -100, -100, null, true), material);
+    scene.add(skyBoxMesh);*/
+
+    document.body.style.backgroundColor = "lightBlue";
+
 
     // initialise loaders
     var colladaLoader = new THREE.ColladaLoader();
@@ -89,7 +111,7 @@
     camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 1, 5000);
     camera.position.set(x, y, z);
     controls = new THREE.OrbitControls(camera, renderer.domElement);
-    console.log("Starting event loop");
+    //console.log("Starting event loop");
     Leap.loop({}, function(frame) {
       update_state(frame);
       camera.position.x = state.location.x;
