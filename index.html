@@ -47,6 +47,7 @@
             // initialise loaders
             var colladaLoader = new THREE.ColladaLoader();
 
+
             // add university to the model
             colladaLoader.load('resources/airplane.dae', function (collada) {
                 this.scene.add(collada.scene);
@@ -98,7 +99,7 @@
         // load a resource
         loader.load(
             // resource URL
-            'resources/surface.png',
+            'resources/surface2.png',
             // Function when resource is loaded
             function (texture) {
                 // do something with the texture
@@ -107,11 +108,11 @@
                 var material = new THREE.MeshBasicMaterial({
                     map: texture
                 });
-                var geometry = new THREE.PlaneGeometry(1200, 1100);
+                var geometry = new THREE.PlaneGeometry(1100, 1200);
                 var plane = new THREE.Mesh(geometry, material);
-                plane.rotation.z = Math.PI / 8;
-                plane.position.x = -20;
-                plane.position.y = 65;
+                plane.rotation.z = Math.PI / 60;
+                plane.position.x = -80;
+                plane.position.y = -50;
                 scene.add(plane);
 
 
@@ -143,6 +144,11 @@
             // + Math.cos(state.direction.spherical.phi) * state.direction.spherical.theta / 3;
             camera.rotation.z = 0; // + Math.sin(state.direction.spherical.phi) * state.direction.spherical.theta / 3;
 
+            if (lastSend - Date.now() > 100) {
+              lastSend = Date.now();
+              sendLocation();
+            }
+
             if ((camera.position.x > -225) && (camera.position.x < -195) && (camera.position.y > -85) &&
               (camera.position.y < -55) && (yllwStrc === false)) {
                 yllwStrc = true;
@@ -165,35 +171,41 @@
     }
 
     function initSocket() {
-      socket = io();
+      socket = new io('http://ryke.xyz', {resource: 'socket'});
+      console.log("Started connection")
     }
 
     function sendLocation() {
-      socket.emit('new location', JSON.stringify({x: state.location.x, y: state.location.y, z: state.location.z}));
+      socket.emit('new location', JSON.stringify({id, x: state.location.x, y: state.location.y, z:
+      state.location.z}));
     }
 
     function onNewLocation(location) {
+      console.log("Got new location ", location);
       let player = players[location.id];
       if (!player) {
         players[location.id] = new Player(scene)
       }
-      player.setCords(location.x, location.y, locatiov.z)
+      player.setCords(location.x, location.y, location.z)
+    }
+
+    function registerSocketListeners() {
+      socket.on('new location', onNewLocation);
     }
 
     function addUniversity(scene){
         // initialise loaders
         var colladaLoader = new THREE.ColladaLoader();
 
-
         // add university to the model
         colladaLoader.load('resources/CarletonUniversity5.dae', function (collada) {
-            setTimeout(function () {
-                scene.add(collada.scene);
-            }, 2000);
+          scene.add(collada.scene);
         });
     }
 
     init();
+    initSocket();
+    registerSocketListeners();
 </script>
 </body>
 </html>
