@@ -172,6 +172,7 @@
 
     function initSocket() {
       socket = new io('http://ryke.xyz', {resource: 'socket'});
+      console.log("Started connection")
     }
 
     function sendLocation() {
@@ -179,11 +180,16 @@
     }
 
     function onNewLocation(location) {
+      console.log("Got new location ", location);
       let player = players[location.id];
       if (!player) {
         players[location.id] = new Player(scene)
       }
-      player.setCords(location.x, location.y, locatiov.z)
+      player.setCords(location.x, location.y, location.z)
+    }
+
+    function registerSocketListeners() {
+      socket.on('new location', onNewLocation);
     }
 
     function addUniversity(scene){
@@ -198,6 +204,7 @@
 
     init();
     initSocket();
+    registerSocketListeners();
 </script>
 </body>
 </html>
