@@ -17,7 +17,7 @@ io.on('connection', function (socket) {
 
   // when the client emits 'new message', this listens and executes
   socket.on('new location', function (data) {
-    console.log("new location information from id: " + data.id);
+    // console.log("new location information from id: " + data.id);
     // we tell the client to execute 'new location'
     socket.id = data.id;
     socket.broadcast.emit('new location', data);
@@ -25,6 +25,7 @@ io.on('connection', function (socket) {
 
   socket.on('disconnect', function () {
     // echo globally that this client has left
+    console.log("disconnect event");
     socket.broadcast.emit('user left', {
       id: socket.id
     });
