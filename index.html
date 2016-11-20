@@ -144,6 +144,11 @@
             // + Math.cos(state.direction.spherical.phi) * state.direction.spherical.theta / 3;
             camera.rotation.z = 0; // + Math.sin(state.direction.spherical.phi) * state.direction.spherical.theta / 3;
 
+            if (lastSend - Date.now() > 100) {
+              lastSend = Date.now();
+              sendLocation();
+            }
+
             if ((camera.position.x > -225) && (camera.position.x < -195) && (camera.position.y > -85) &&
               (camera.position.y < -55) && (yllwStrc === false)) {
                 yllwStrc = true;
@@ -166,7 +171,7 @@
     }
 
     function initSocket() {
-      socket = io('http://ryke.xyz', {resource: 'socket'});
+      socket = new io('http://ryke.xyz', {resource: 'socket'});
     }
 
     function sendLocation() {
@@ -185,16 +190,14 @@
         // initialise loaders
         var colladaLoader = new THREE.ColladaLoader();
 
-
         // add university to the model
         colladaLoader.load('resources/CarletonUniversity5.dae', function (collada) {
-            setTimeout(function () {
-                scene.add(collada.scene);
-            }, 2000);
+          scene.add(collada.scene);
         });
     }
 
     init();
+    initSocket();
 </script>
 </body>
 </html>
