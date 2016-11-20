@@ -11,8 +11,8 @@
 <script src=https://mrdoob.github.io/three.js/build/three.min.js></script>
 <script src=https://mrdoob.github.io/three.js/examples/js/controls/OrbitControls.js></script>
 <script src=ColladaLoader.js></script>
+<script type="text/javascript" src="locationCalculator.js"></script>
 <script>
-  var loop = {};
   var x = 0, y = -1000, z = 100;
   var info, stats, renderer, scene, camera, controls, light;
   function init() {
@@ -22,7 +22,7 @@
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
     scene = new THREE.Scene();
-      /*var geometry = new THREE.CubeGeometry(200, 200, 200);
+      var geometry = new THREE.CubeGeometry(200, 200, 200);
        var material = new THREE.MeshBasicMaterial({
        color: 0x0000FF,
        wireframe: true,
@@ -30,7 +30,7 @@
        });
        var mesh = new THREE.Mesh(geometry, material);
        scene.add(mesh);
-       */
+       
     var colladaLoader = new THREE.ColladaLoader();
 
     colladaLoader.load('CarletonUniversity2.dae', function (collada) {
@@ -43,18 +43,13 @@
     controls = new THREE.OrbitControls(camera, renderer.domElement);
     //controls.maxDistance = 1000;
     console.log("Starting event loop");
-    Leap.loop(function (frame) {
-      console.log(frame);
-      if (frame.hands > 0) {
-        var hand = frame.hands[0];
-        // process hard and determine change in position based on that and time since last frame
-      }
-      renderer.render(scene, camera);
-    });
+    Leap.loop({}, update_state);
+
     setTimeout(function () {
       setInterval(function () {
-        y += 1;
-        camera.position.y = y;
+        camera.position.x = state.location.x;
+        camera.position.y = state.location.x;
+        camera.position.y = state.location.x;
         //controls.update();
       }, 10);
     }, 3000);

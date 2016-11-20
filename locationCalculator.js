@@ -1,7 +1,7 @@
 var state = {
     location: {
-        x: 100,
-        y: 100,
+        x: 0,
+        y: -1000,
         z: 100
     },
     direction: {
@@ -31,7 +31,7 @@ function update_state(frame) {
         var time = frame.timestamp - (previousFrame ? previousFrame.timestamp : frame.timestamp);
 
         var spherical = state["direction"]["spherical"];
-        spherical["theta"] -= pitch*time/10000000;
+        spherical["theta"] -= pitch*time/100000000000000;
         if (spherical["theta"] < 0) {
             spherical["theta"] = 0;
         } else if (spherical["theta"] > Math.PI) {
@@ -40,7 +40,7 @@ function update_state(frame) {
 
         // spherical["theta"] = Math.PI/2; // DON'T SUBMIT
 
-        spherical["phi"] += roll*time/5000000;
+        spherical["phi"] += roll*time/500000000000000;
         if (spherical["phi"] < 0) {
             spherical["phi"] = 2*Math.PI + spherical["phi"];
         } else if (spherical["phi"] >= 2*Math.PI) {
