@@ -20,58 +20,20 @@
     var x = 0, y = -1000, z = 100;
     var info, stats, renderer, scene, camera, controls, light, yllwStrc = false;
     function init() {
-        console.log("Starting init");
         renderer = new THREE.WebGLRenderer({antialias: true, alpha: 1, clearColor: 0xffffff});
         renderer.shadowMap.enabled = true;
         renderer.setSize(window.innerWidth, window.innerHeight);
         document.body.appendChild(renderer.domElement);
         scene = new THREE.Scene();
+
+        // Alerts have been activated
         var yllwStrc = false;
         var ghandi = false;
 
-        /*
-         // add cube to the model
-         var geometry = new THREE.CubeGeometry(200, 200, 200);
-         var material = new THREE.MeshBasicMaterial({
-         color: 0x0000FF,
-         wireframe: true,
-         wireframeLinewidth: 2
-         });
-         var mesh = new THREE.Mesh(geometry, material);
-         scene.add(mesh);
-         */
-
-
-        /*
-         var urlPrefix = "resources/sky/";
-         var urls = [urlPrefix + "posx.jpg", urlPrefix + "negx.jpg", urlPrefix + "posy.jpg", urlPrefix + "negy.jpg", urlPrefix + "posz.jpg", urlPrefix + "negz.jpg"];
-         var textureCube= THREE.ImageUtils.loadTextureCube(urls);
-
-         var shader = THREE.ShaderLib["cube"];
-         var uniforms = THREE.UniformsUtils.clone(shader.uniforms);
-         uniforms['tCube'].texture = textureCube;
-         var material = new THREE.ShaderMaterial({
-         fragmentShader : shader.fragmentShader,
-         vertexShader :shader.vertexShader,
-         uniforms : uniforms
-         });
-
-         var skyBoxMesh = new THREE.Mesh(new THREE.CubeGeometry(100, 100, 100, -100, -100, -100, null, true), material);
-         scene.add(skyBoxMesh);*/
-
         document.body.style.backgroundColor = "lightBlue";
 
+        addUniversity(scene);
 
-        // initialise loaders
-        var colladaLoader = new THREE.ColladaLoader();
-        var loader = new THREE.TextureLoader();
-
-        // add university to the model
-        colladaLoader.load('resources/CarletonUniversity5.dae', function (collada) {
-            setTimeout(function () {
-                scene.add(collada.scene);
-            }, 2000);
-        });
 
         var light = new THREE.PointLight(0xffffff);
         light.position.set(-100, 200, 100);
@@ -81,6 +43,19 @@
         light.position.set(x, y, z);
         scene.add(light);
 
+        var loader = new THREE.TextureLoader();
+
+        // Create a grass field
+        var material = new THREE.MeshBasicMaterial({
+            color: "green"
+        });
+        var geometry = new THREE.PlaneGeometry(12000, 11000);
+        var plane = new THREE.Mesh(geometry, material);
+        plane.rotation.z = Math.PI / 8;
+        plane.position.x = -20;
+        plane.position.y = 65;
+        plane.position.z = -1;
+        scene.add(plane);
 
         // load a resource
         loader.load(
@@ -89,16 +64,7 @@
             // Function when resource is loaded
             function (texture) {
                 // do something with the texture
-                var material = new THREE.MeshBasicMaterial({
-                    color: "green"
-                });
-                var geometry = new THREE.PlaneGeometry(12000, 11000);
-                var plane = new THREE.Mesh(geometry, material);
-                plane.rotation.z = Math.PI / 8;
-                plane.position.x = -20;
-                plane.position.y = 65;
-                plane.position.z = -1;
-                scene.add(plane);
+
 
                 var material = new THREE.MeshBasicMaterial({
                     map: texture
@@ -127,7 +93,7 @@
         camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 1, 5000);
         camera.position.set(x, y, z);
         controls = new THREE.OrbitControls(camera, renderer.domElement);
-        //console.log("Starting event loop");
+
         Leap.loop({}, function (frame) {
             update_state(frame);
             camera.position.x = state.location.x;
@@ -139,7 +105,6 @@
             // + Math.cos(state.direction.spherical.phi) * state.direction.spherical.theta / 3;
             camera.rotation.z = 0; // + Math.sin(state.direction.spherical.phi) * state.direction.spherical.theta / 3;
 
-            console.log(camera.position.y);
             if ((camera.position.x > -225) && (camera.position.x < -195) && (camera.position.y > -85) &&
               (camera.position.y < -55) && (yllwStrc === false)) {
                 yllwStrc = true;
@@ -160,6 +125,25 @@
         //controls.update();
         Leap.loopController.setBackground(true);
     }
+
+    function addUniversity(scene){
+        // initialise loaders
+        var colladaLoader = new THREE.ColladaLoader();
+
+
+        // add university to the model
+        colladaLoader.load('resources/CarletonUniversity5.dae', function (collada) {
+            setTimeout(function () {
+                scene.add(collada.scene);
+            }, 2000);
+        });
+    }
+
+    function addLight(scene){
+
+    }
+
+
     init();
 </script>
 </body>
