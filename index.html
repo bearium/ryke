@@ -51,7 +51,7 @@
             colladaLoader.load('resources/airplane.dae', function (collada) {
                 this.scene.add(collada.scene);
                 this.airplane = collada.scene;
-            })
+            }.bind(this))
         }
     }
 
