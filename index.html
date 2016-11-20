@@ -189,7 +189,7 @@
       let player = players[location.id];
       if (!player) {
         console.log("Created player");
-        player = new Player(scene, id);
+        player = new Player(scene, location.id);
         players[location.id] = player;
       }
       player.setCords(location.x, location.y, location.z, location.phi)
