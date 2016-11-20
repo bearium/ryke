@@ -1,64 +1,68 @@
 <!doctype html>
-<html lang=en >
+<html lang=en>
 <head>
     <title>Ryke Carleton Exploration tool</title>
-    <meta charset=utf-8 />
-    <meta name=viewport content='user-scalable=no,width=device-width,maximum-scale=1.0,minimum-scale=1.0' />
+    <meta charset=utf-8/>
+    <meta name=viewport content='user-scalable=no,width=device-width,maximum-scale=1.0,minimum-scale=1.0'/>
 </head>
 <body>
-<script src=http://js.leapmotion.com/leap-0.6.4.js ></script>
-<script src=http://mrdoob.github.io/three.js/examples/js/libs/stats.min.js ></script>
-<script src=http://mrdoob.github.io/three.js/build/three.min.js ></script>
-<script src=http://mrdoob.github.io/three.js/examples/js/controls/OrbitControls.js ></script>
-<script src=ColladaLoader.js ></script>
+<script src=http://js.leapmotion.com/leap-0.6.4.js></script>
+<script src=http://mrdoob.github.io/three.js/examples/js/libs/stats.min.js></script>
+<script src=http://mrdoob.github.io/three.js/build/three.min.js></script>
+<script src=http://mrdoob.github.io/three.js/examples/js/controls/OrbitControls.js></script>
+<script src=ColladaLoader.js></script>
 <script>
   var loop = {};
-  var x = 500, y = 700, z = 700;
+  var x = 0, y = -1000, z = 100;
   var info, stats, renderer, scene, camera, controls, light;
   function init() {
     console.log("Starting init");
-    renderer = new THREE.WebGLRenderer( { antialias: true, alpha: 1, clearColor: 0xffffff }  );
+    renderer = new THREE.WebGLRenderer({ antialias: true, alpha: 1, clearColor: 0xffffff });
     renderer.shadowMap.enabled = true;
-    renderer.setSize( window.innerWidth, window.innerHeight );
-    document.body.appendChild( renderer.domElement );
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
     scene = new THREE.Scene();
-    var geometry = new THREE.CubeGeometry(200, 200, 200);
-    var material = new THREE.MeshBasicMaterial({
-      color: 0x0000FF,
-      wireframe: true,
-      wireframeLinewidth: 2
-    });
-    var mesh = new THREE.Mesh(geometry, material);
-    scene.add(mesh);
+      /*var geometry = new THREE.CubeGeometry(200, 200, 200);
+       var material = new THREE.MeshBasicMaterial({
+       color: 0x0000FF,
+       wireframe: true,
+       wireframeLinewidth: 2
+       });
+       var mesh = new THREE.Mesh(geometry, material);
+       scene.add(mesh);
+       */
     var colladaLoader = new THREE.ColladaLoader();
 
-    colladaLoader.load('CarletonUniversity2.dae', function ( collada ) {
-      scene.add( collada.scene );
+    colladaLoader.load('CarletonUniversity2.dae', function (collada) {
+      scene.add(collada.scene);
     });
-    camera = new THREE.PerspectiveCamera( 40, window.innerWidth / window.innerHeight, 1, 5000 );
-    camera.position.set( x, y, z );
-    controls = new THREE.OrbitControls( camera, renderer.domElement );
+    var axisHelper = new THREE.AxisHelper(1000);
+    scene.add(axisHelper);
+    camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 1, 5000);
+    camera.position.set(x, y, z);
+    controls = new THREE.OrbitControls(camera, renderer.domElement);
     //controls.maxDistance = 1000;
     console.log("Starting event loop");
-    Leap.loop(function( frame ) {
+    Leap.loop(function (frame) {
       console.log(frame);
       if (frame.hands > 0) {
         var hand = frame.hands[0];
         // process hard and determine change in position based on that and time since last frame
       }
-      renderer.render( scene, camera );
+      renderer.render(scene, camera);
     });
-    /*setInterval(function () {
-      x += 1;
-      z -= 1;
-      camera.position.x = x;
-      camera.position.z = z;
-      //controls.update();
-    },10);*/
+    setTimeout(function () {
+      setInterval(function () {
+        y += 1;
+        camera.position.y = y;
+        //controls.update();
+      }, 10);
+    }, 3000);
     function render() {
-      requestAnimationFrame( render );
-      renderer.render( scene, camera );
+      requestAnimationFrame(render);
+      renderer.render(scene, camera);
     }
+
     render();
     //controls.update();
     Leap.loopController.setBackground(true);
