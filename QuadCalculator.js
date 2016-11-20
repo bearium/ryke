@@ -5,7 +5,7 @@
 var state = {
   location: {
     x: 0,
-    y: -1000,
+    y: -600,
     z: 100
   },
   direction: {
@@ -39,7 +39,7 @@ function update_state(frame) {
       var x = position[0];
       var y = -position[2];
       var z = position[1] - 200;
-      console.log(z);
+      console.log(pitch);
 
       spherical.theta = pitch + Math.PI / 2;
 
