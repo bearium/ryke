@@ -28,7 +28,7 @@
             this.scene = scene;
             this.id = id;
             this.airplane = false;
-            this.draw();
+            this.draw(id);
         }
 
         setCords(x, y, z, phi)
@@ -42,7 +42,11 @@
             }
         }
 
-        draw()
+        destroy() {
+          scene.remove( this.airplane );
+        }
+
+        draw(id)
         {
             // initialise loaders
             var colladaLoader = new THREE.ColladaLoader();
@@ -51,6 +55,7 @@
             colladaLoader.load('resources/airplane.dae', function (collada) {
                 this.scene.add(collada.scene);
                 this.airplane = collada.scene;
+                this.airplane.name = `${id}`;
             }.bind(this))
         }
     }
@@ -193,6 +198,13 @@
 
     function registerSocketListeners() {
       socket.on('new location', onNewLocation);
+      socket.on('user left', (data) => {
+        let player = players[data.id];
+        if (player) {
+          console.log("Unloading player ", data.id);
+          player.destroy();
+        }
+      })
     }
 
     function addUniversity(scene){
