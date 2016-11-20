@@ -99,6 +99,7 @@
             camera.position.x = state.location.x;
             camera.position.y = state.location.y;
             camera.position.z = state.location.z;
+            console.log(camera.position.x + " - " + camera.position.y + " - " + camera.position.z);
             light.position.set(camera.position.x, camera.position.y, camera.position.z);
             camera.rotation.y = state.direction.spherical.phi;
             camera.rotation.x = Math.PI / 2;
@@ -138,11 +139,6 @@
             }, 2000);
         });
     }
-
-    function addLight(scene){
-
-    }
-
 
     init();
 </script>

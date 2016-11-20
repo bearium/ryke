@@ -4,9 +4,9 @@
 
 var state = {
   location: {
-    x: 0,
-    y: -600,
-    z: 100
+    x: -325,
+    y: -306,
+    z: 96
   },
   direction: {
     cartesian: {
