@@ -15,36 +15,37 @@
 <script src="https://mrdoob.github.io/three.js/examples/js/loaders/collada/Animation.js"></script>
 <script src="https://mrdoob.github.io/three.js/examples/js/loaders/collada/AnimationHandler.js"></script>
 <script src="https://mrdoob.github.io/three.js/examples/js/loaders/collada/KeyFrameAnimation.js"></script>
+<script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
 <script type="text/javascript" src="QuadCalculator.js"></script>
 <script>
-    var x = 0, y = -1000, z = 100, id = date.now() ;
-    var info, stats, renderer, scene, camera, controls, light, yllwStrc = false;
+    var x = 0, y = -1000, z = 100, id = Date.now() ;
+    var players = [];
+    var info, stats, socket, renderer, scene, camera, controls, light, yllwStrc = false, lastSend = Date.now();
 
-    class PLayer()
-    {
+    class Player {
         constructor(scene, id)
         {
             this.scene = scene;
-            this.id = id
+            this.id = id;
             this.airplane = false;
-
-
+            this.draw();
         }
 
-        setcor(x, y, z, phi)
+        setCords(x, y, z, phi)
         {
             if (this.airplane == false) return;
             this.airplane.position.x = x;
             this.airplane.position.y = y;
             this.airplane.position.z = z;
-            this.state.direction.spherical.phi;
+            if (phi) {
+              this.state.direction.spherical.phi = phi;
+            }
         }
 
         draw()
         {
             // initialise loaders
             var colladaLoader = new THREE.ColladaLoader();
-
 
             // add university to the model
             colladaLoader.load('resources/airplane.dae', function (collada) {
@@ -161,6 +162,22 @@
         render();
         //controls.update();
         Leap.loopController.setBackground(true);
+    }
+
+    function initSocket() {
+      socket = io();
+    }
+
+    function sendLocation() {
+      socket.emit('new location', JSON.stringify({x: state.location.x, y: state.location.y, z: state.location.z}));
+    }
+
+    function onNewLocation(location) {
+      let player = players[location.id];
+      if (!player) {
+        players[location.id] = new Player(scene)
+      }
+      player.setCords(location.x, location.y, locatiov.z)
     }
 
     function addUniversity(scene){
