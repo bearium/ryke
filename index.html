@@ -181,7 +181,7 @@
 
     function sendLocation() {
       socket.emit('new location', {id, x: state.location.x, y: state.location.y, z:
-      state.location.z});
+      state.location.z, phi: this.state.direction.spherical.phi});
     }
 
     function onNewLocation(location) {
@@ -192,7 +192,7 @@
         player = new Player(scene, id);
         players[location.id] = player;
       }
-      player.setCords(location.x, location.y, location.z)
+      player.setCords(location.x, location.y, location.z, location.phi)
     }
 
     function registerSocketListeners() {
