@@ -185,20 +185,19 @@
     }
 
     function onNewLocation(location) {
-      console.log("Got new location ", location);
       let player = players[location.id];
       if (!player) {
         console.log("Created player");
         player = new Player(scene, id);
         players[location.id] = player;
       }
-      console.log("Setting player coordinates");
       player.setCords(location.x, location.y, location.z)
     }
 
     function registerSocketListeners() {
       socket.on('new location', onNewLocation);
       socket.on('user left', (data) => {
+        console.log("got user left", data);
         let player = players[data.id];
         if (player) {
           console.log("Unloading player ", data.id);
