@@ -139,7 +139,7 @@
 
     if (Leap) {
       Leap.loop({}, function (frame) {
-        if (mode !== mode.LEAP) return;
+        if (mode !== modes.LEAP) return;
         userLocation.processLeapFrame(frame);
       });
     }
@@ -160,7 +160,6 @@
   }
 
   function updateCameraLocation(x, y, z, phi, theta) {
-    console.log(x);
     camera.position.x = x;
     camera.position.y = y;
     camera.position.z = z;
