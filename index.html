@@ -169,12 +169,15 @@
     controls = new THREE.OrbitControls(camera, renderer.domElement);
     userLocation.updateCameraLocation(updateCameraLocation);
 
-    Leap.loop({}, function (frame) {
-      userLocation.processLeapFrame(frame);
-      userLocation.updateCameraLocation(updateCameraLocation)
-    });
+    if (Leap) {
+      Leap.loop({}, function (frame) {
+        if (mode !== mode.LEAP) return;
+        userLocation.processLeapFrame(frame);
+      });
+    }
 
     function render() {
+      userLocation.updateCameraLocation(updateCameraLocation);
       requestAnimationFrame(render);
       renderer.render(scene, camera);
       if (Date.now() - lastSend > 100) {
@@ -189,9 +192,7 @@
   }
 
   function updateCameraLocation(x, y, z, phi, theta) {
-      if(mode = 0){
-
-          console.log(x);
+      if (mode === modes.LEAP){
         camera.position.x = x;
         camera.position.y = y;
         camera.position.z = z;
@@ -200,10 +201,9 @@
         camera.rotation.x = /*theta ||*/ Math.PI / 2;
         camera.rotation.z = 0;
         light.position.set(x, y, z);
-      }
-      else{
-          camera.updateProjectionMatrix();
-          controls.update(dt);
+      } else {
+        camera.updateProjectionMatrix();
+        controls.update(dt);
       }
   }
 
@@ -264,9 +264,6 @@
     });
   }
 
-
-
-
   initSocket();
   init();
   registerSocketListeners();
@@ -277,7 +274,7 @@
     <input type="range" min="0" max="2" step="0.005" onchange="ground.scale.x = this.value">
     <input type="range" min="0" max="2" step="0.005" onchange="ground.scale.y = this.value">
 </label>
-<div style="position: fixed;background-color: red; width: 300px; height: 600px;">
+<div style="bottom:0;left:0;position: fixed;background-color: black; width: 300px; height: 600px;opacity:0.5">
 
 </div>
 </body>
