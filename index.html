@@ -138,6 +138,7 @@
 
     Leap.loop({}, function (frame) {
       userLocation.processLeapFrame(frame);
+      userLocation.updateCameraLocation(updateCameraLocation)
     });
 
     function render() {
@@ -155,12 +156,13 @@
   }
 
   function updateCameraLocation(x, y, z, phi, theta) {
+    console.log(x);
     camera.position.x = x;
     camera.position.y = y;
     camera.position.z = z;
     light.position.set(camera.position.x, camera.position.y, camera.position.z);
     camera.rotation.y = phi;
-    camera.rotation.x = theta || Math.PI / 2;
+    camera.rotation.x = /*theta ||*/ Math.PI / 2;
     camera.rotation.z = 0;
     light.position.set(x, y, z);
   }
