@@ -171,7 +171,7 @@
 
     if (Leap) {
       Leap.loop({}, function (frame) {
-        if (mode !== mode.LEAP) return;
+        if (mode !== modes.LEAP) return;
         userLocation.processLeapFrame(frame);
       });
     }
