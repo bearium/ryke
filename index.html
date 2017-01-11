@@ -182,11 +182,15 @@
   }
 
   function checkSpecialLocations(camera) {
+
+
+
     if ((camera.position.x > -225) && (camera.position.x < -195) && (camera.position.y > -85) &&
       (camera.position.y < -55) && (yllwStrc === false)) {
       yllwStrc = true;
       alert("Yellow Structure, by Civils, for Civils.");
     }
+
     if ((camera.position.x > -95) && (camera.position.x < -75) && (camera.position.y > -330) &&
       (camera.position.y < -310) && (gandhi === false)) {
       gandhi = true;
@@ -238,7 +242,7 @@
     <input type="range" min="0" max="2" step="0.005" onchange="ground.scale.y = this.value">
 </label>
 <div id="contextTextBox" style="bottom:0;left:0;position: fixed;background-color: black; width: 300px; height: 600px;opacity:0.5">
-
+<span id="textSpan" style="color:white;opacity:1">Hello</span>
 </div>
 </body>
 </html>
