@@ -18,6 +18,11 @@
 <script src="https://threejs.org/examples/js/loaders/collada/KeyFrameAnimation.js"></script>
 <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
 <script type="text/javascript" src="universalCalculator.js"></script>
+<script src="./js/three.min.js"></script>
+<script src="./js/StereoEffect.js"></script>
+<script src="./js/DeviceOrientationControls.js"></script>
+<script src="./js/OrbitControls.js"></script>
+<script src="./js/helvetiker_regular.typeface.js"></script>
 <script>
   let userLocation = new universalCalculator(-355, -314, 103, Math.PI/2, 0);
   let id = Date.now();
@@ -71,6 +76,33 @@
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
     scene = new THREE.Scene();
+    effect = new THREE.StereoEffect(renderer);
+
+    controls = new THREE.FirstPersonControls( camera );
+    controls.movementSpeed	= 20;
+    controls.lookSpeed	= 0.05;
+    controls.lookVertical	= true;
+
+    function setOrientationControls(e) {
+      // If device orientation is not available, return.
+      if (!e.alpha) {
+          return;
+      }
+
+      // Create controls for mobile.
+      controls = new THREE.DeviceOrientationControls(camera, true);
+      controls.connect();
+      controls.update();
+
+      element.addEventListener('click', fullscreen, false);
+
+      window.removeEventListener('deviceorientation', setOrientationControls, true);
+     }
+    window.addEventListener('deviceorientation', setOrientationControls, true);
+
+    //Resize page.
+    window.addEventListener('resize', resize, false);
+    setTimeout(resize, 1);
 
     document.body.style.backgroundColor = "lightBlue";
 
@@ -138,13 +170,11 @@
     userLocation.updateCameraLocation(updateCameraLocation);
 
     Leap.loop({}, function (frame) {
-      if (mode !== mode.LEAP) return;
       userLocation.processLeapFrame(frame);
-
+      userLocation.updateCameraLocation(updateCameraLocation)
     });
 
     function render() {
-      userLocation.updateCameraLocation(updateCameraLocation);
       requestAnimationFrame(render);
       renderer.render(scene, camera);
       if (Date.now() - lastSend > 100) {
@@ -159,15 +189,21 @@
   }
 
   function updateCameraLocation(x, y, z, phi, theta) {
-    console.log(x);
-    camera.position.x = x;
-    camera.position.y = y;
-    camera.position.z = z;
-    light.position.set(camera.position.x, camera.position.y, camera.position.z);
-    camera.rotation.y = phi;
-    camera.rotation.x = /*theta ||*/ Math.PI / 2;
-    camera.rotation.z = 0;
-    light.position.set(x, y, z);
+      if(mode = 0){
+
+          console.log(x);
+        camera.position.x = x;
+        camera.position.y = y;
+        camera.position.z = z;
+        light.position.set(camera.position.x, camera.position.y, camera.position.z);
+        camera.rotation.y = phi;
+        camera.rotation.x = /*theta ||*/ Math.PI / 2;
+        camera.rotation.z = 0;
+        light.position.set(x, y, z);
+      }
+      else{
+          camera.updateProjectionMatrix();
+      }
   }
 
   function initSocket() {
@@ -226,6 +262,9 @@
       scene.add(collada.scene);
     });
   }
+
+
+
 
   initSocket();
   init();
