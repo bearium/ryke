@@ -17,214 +17,216 @@
 <script src="https://threejs.org/examples/js/loaders/collada/AnimationHandler.js"></script>
 <script src="https://threejs.org/examples/js/loaders/collada/KeyFrameAnimation.js"></script>
 <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
-<script type="text/javascript" src="QuadCalculator.js"></script>
+<script type="text/javascript" src="universalCalculator.js"></script>
 <script>
-    var x = -355, y = -314, z = 103, id = Date.now() ;
-    var players = [];
-    var info, stats, socket, ground, renderer, scene, camera, controls, light, yllwStrc = false, lastSend = Date.now();
+  let userLocation = new universalCalculator(-355, -314, 103, Math.PI/2, 0);
+  let id = Date.now();
+  let players = [];
+  let modes = {
+    LEAP: 0,
+    PHONE: 1,
+  };
+  let info, stats, socket, ground, renderer, scene, camera, controls, light, gandhi = false, yllwStrc = false, lastSend = Date.now();
 
-    class Player {
-        constructor(scene, id)
-        {
-            this.scene = scene;
-            this.id = id;
-            this.airplane = false;
-            this.draw(id);
-        }
-
-        setCords(x, y, z, phi)
-        {
-            if (this.airplane == false) return;
-            this.airplane.position.x = x;
-            this.airplane.position.y = y;
-            this.airplane.position.z = z;
-            if (phi) {
-              this.airplane.rotation.z = phi + Math.PI;
-            }
-        }
-
-        destroy() {
-          scene.remove( this.airplane );
-        }
-
-        draw(id)
-        {
-            // initialise loaders
-            var colladaLoader = new THREE.ColladaLoader();
-
-            // add university to the model
-            colladaLoader.load('resources/airplane.dae', function (collada) {
-                this.scene.add(collada.scene);
-                this.airplane = collada.scene;
-                this.airplane.name = `${id}`;
-            }.bind(this))
-        }
+  class Player {
+    constructor(scene, id) {
+      this.scene = scene;
+      this.id = id;
+      this.airplane = false;
+      this.draw(id);
     }
 
-
-
-
-    function init() {
-        renderer = new THREE.WebGLRenderer({antialias: true, alpha: 1, clearColor: 0xffffff});
-        renderer.shadowMap.enabled = true;
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        document.body.appendChild(renderer.domElement);
-        scene = new THREE.Scene();
-        // Alerts have been activated
-        var yllwStrc = false;
-        var ghandi = false;
-
-        document.body.style.backgroundColor = "lightBlue";
-
-        addUniversity(scene);
-
-
-        var light = new THREE.PointLight(0xffffff);
-        light.position.set(-100, 200, 100);
-        scene.add(light);
-
-        light = new THREE.PointLight(0xffffff);
-        light.position.set(x, y, z);
-        scene.add(light);
-
-        var loader = new THREE.TextureLoader();
-
-        // Create a grass field
-        var material = new THREE.MeshBasicMaterial({
-            color: "green"
-        });
-        var geometry = new THREE.PlaneGeometry(12000, 11000);
-        var plane = new THREE.Mesh(geometry, material);
-        plane.rotation.z = Math.PI / 8;
-        plane.position.x = -20;
-        plane.position.y = 65;
-        plane.position.z = -1;
-        scene.add(plane);
-
-        // load a resource
-        loader.load(
-            // resource URL
-            'resources/surface4.jpg',
-            // Function when resource is loaded
-            function (texture) {
-                // do something with the texture
-
-
-                var material = new THREE.MeshBasicMaterial({
-                    map: texture
-                });
-                var geometry = new THREE.PlaneGeometry(4096, 4096);
-                ground = new THREE.Mesh(geometry, material);
-                // ground.rotation.z = Math.PI / 60;
-                ground.position.x = -85;
-                ground.position.y = 83;
-                ground.scale.x = 0.43;
-                ground.scale.y = 0.43;
-                scene.add(ground);
-
-
-            },
-            // Function called when download progresses
-            function (xhr) {
-                console.log((xhr.loaded / xhr.total * 100) + '% loaded');
-            },
-            // Function called when download errors
-            function (xhr) {
-                console.log('An error happened');
-            }
-        );
-
-        var axisHelper = new THREE.AxisHelper(1000);
-        scene.add(axisHelper);
-        camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 1, 5000);
-        camera.position.set(x, y, z);
-        controls = new THREE.OrbitControls(camera, renderer.domElement);
-        camera.rotation.x = Math.PI / 2;
-        camera.rotation.y = -0.8;
-        camera.rotation.z = 0;
-
-        Leap.loop({}, function (frame) {
-            update_state(frame);
-            camera.position.x = state.location.x;
-            camera.position.y = state.location.y;
-            camera.position.z = state.location.z;
-            light.position.set(camera.position.x, camera.position.y, camera.position.z);
-            camera.rotation.y = state.direction.spherical.phi;
-            camera.rotation.x = Math.PI / 2;
-            // + Math.cos(state.direction.spherical.phi) * state.direction.spherical.theta / 3;
-            camera.rotation.z = 0; // + Math.sin(state.direction.spherical.phi) * state.direction.spherical.theta / 3;
-
-            if ((camera.position.x > -225) && (camera.position.x < -195) && (camera.position.y > -85) &&
-              (camera.position.y < -55) && (yllwStrc === false)) {
-                yllwStrc = true;
-                alert("Yellow Structure, by Civils, for Civils.");
-            }
-            if ((camera.position.x > -95) && (camera.position.x < -75) && (camera.position.y > -330) &&
-                (camera.position.y < -310) && (ghandi === false)) {
-                ghandi = true;
-                alert("Ghandi.");
-            }
-        });
-        function render() {
-            requestAnimationFrame(render);
-            renderer.render(scene, camera);
-            if (Date.now() - lastSend > 100) {
-              lastSend = Date.now();
-              sendLocation();
-            }
-        }
-
-        render();
-        //controls.update();
-        Leap.loopController.setBackground(true);
-    }
-
-    function initSocket() {
-      socket = new io('http://ryke.xyz', {resource: 'socket'});
-      console.log("Started connection")
-    }
-
-    function sendLocation() {
-      socket.emit('new location', {id, x: state.location.x, y: state.location.y, z:
-      state.location.z, phi: state.direction.spherical.phi});
-    }
-
-    function onNewLocation(location) {
-      if (id == location.id) return;
-      let player = players[location.id];
-      if (!player) {
-        console.log("Created player");
-        player = new Player(scene, location.id);
-        players[location.id] = player;
+    setCords(x, y, z, phi) {
+      if (this.airplane == false) return;
+      this.airplane.position.x = x;
+      this.airplane.position.y = y;
+      this.airplane.position.z = z;
+      if (phi) {
+        this.airplane.rotation.z = phi + Math.PI;
       }
-      player.setCords(location.x, location.y, location.z, location.phi)
     }
 
-    function registerSocketListeners() {
-      socket.on('new location', onNewLocation);
-      socket.on('user left', (data) => {
-        console.log("got user left", data);
-        let player = players[data.id];
-        if (player) {
-          console.log("Unloading player ", data.id);
-          player.destroy();
-        }
-      })
+    destroy() {
+      scene.remove(this.airplane);
     }
 
-    function addUniversity(scene){
-        // initialise loaders
-        var colladaLoader = new THREE.ColladaLoader();
+    draw(id) {
+      // initialise loaders
+      var colladaLoader = new THREE.ColladaLoader();
 
-        // add university to the model
-        colladaLoader.load('resources/CarletonUniversity5.dae', function (collada) {
-          scene.add(collada.scene);
+      // add university to the model
+      colladaLoader.load('resources/airplane.dae', function (collada) {
+        this.scene.add(collada.scene);
+        this.airplane = collada.scene;
+        this.airplane.name = `${id}`;
+      }.bind(this))
+    }
+  }
+
+
+  function init() {
+    renderer = new THREE.WebGLRenderer({antialias: true, alpha: 1, clearColor: 0xffffff});
+    renderer.shadowMap.enabled = true;
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+    scene = new THREE.Scene();
+
+    document.body.style.backgroundColor = "lightBlue";
+
+    addUniversity(scene);
+
+
+    light = new THREE.PointLight(0xffffff);
+    light.position.set(-100, 200, 100);
+    scene.add(light);
+
+    light = new THREE.PointLight(0xffffff);
+    scene.add(light);
+
+    var loader = new THREE.TextureLoader();
+
+    // Create a grass field
+    var material = new THREE.MeshBasicMaterial({
+      color: "green"
+    });
+    var geometry = new THREE.PlaneGeometry(12000, 11000);
+    var plane = new THREE.Mesh(geometry, material);
+    plane.rotation.z = Math.PI / 8;
+    plane.position.x = -20;
+    plane.position.y = 65;
+    plane.position.z = -1;
+    scene.add(plane);
+
+    // load a resource
+    loader.load(
+      // resource URL
+      'resources/surface4.jpg',
+      // Function when resource is loaded
+      function (texture) {
+        // do something with the texture
+
+
+        var material = new THREE.MeshBasicMaterial({
+          map: texture
         });
+        var geometry = new THREE.PlaneGeometry(4096, 4096);
+        ground = new THREE.Mesh(geometry, material);
+        // ground.rotation.z = Math.PI / 60;
+        ground.position.x = -85;
+        ground.position.y = 83;
+        ground.scale.x = 0.43;
+        ground.scale.y = 0.43;
+        scene.add(ground);
+
+
+      },
+      // Function called when download progresses
+      function (xhr) {
+        console.log((xhr.loaded / xhr.total * 100) + '% loaded');
+      },
+      // Function called when download errors
+      function (xhr) {
+        console.log('An error happened');
+      }
+    );
+
+    var axisHelper = new THREE.AxisHelper(1000);
+    scene.add(axisHelper);
+    camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 1, 5000);
+    controls = new THREE.OrbitControls(camera, renderer.domElement);
+    userLocation.updateCameraLocation(updateCameraLocation);
+
+    Leap.loop({}, function (frame) {
+      userLocation.processLeapFrame(frame);
+      userLocation.updateCameraLocation(updateCameraLocation)
+    });
+
+    function render() {
+      requestAnimationFrame(render);
+      renderer.render(scene, camera);
+      if (Date.now() - lastSend > 100) {
+        lastSend = Date.now();
+        sendLocation();
+      }
     }
 
-    initSocket();
-    init();
-    registerSocketListeners();
+    render();
+    //controls.update();
+    Leap.loopController.setBackground(true);
+  }
+
+  function updateCameraLocation(x, y, z, phi, theta) {
+    console.log(x);
+    camera.position.x = x;
+    camera.position.y = y;
+    camera.position.z = z;
+    light.position.set(camera.position.x, camera.position.y, camera.position.z);
+    camera.rotation.y = phi;
+    camera.rotation.x = /*theta ||*/ Math.PI / 2;
+    camera.rotation.z = 0;
+    light.position.set(x, y, z);
+  }
+
+  function initSocket() {
+    socket = new io('http://ryke.xyz', {resource: 'socket'});
+    console.log("Started connection")
+  }
+
+  function sendLocation() {
+    socket.emit('new location', {
+      id, x: userLocation, y: userLocation.y, z: userLocation.z, phi: userLocation.phi
+    });
+  }
+
+  function checkSpecialLocations(camera) {
+    if ((camera.position.x > -225) && (camera.position.x < -195) && (camera.position.y > -85) &&
+      (camera.position.y < -55) && (yllwStrc === false)) {
+      yllwStrc = true;
+      alert("Yellow Structure, by Civils, for Civils.");
+    }
+    if ((camera.position.x > -95) && (camera.position.x < -75) && (camera.position.y > -330) &&
+      (camera.position.y < -310) && (gandhi === false)) {
+      gandhi = true;
+      alert("Gandhi");
+    }
+  }
+
+  function onNewLocation(location) {
+    if (id == location.id) return;
+    let player = players[location.id];
+    if (!player) {
+      console.log("Created player");
+      player = new Player(scene, location.id);
+      players[location.id] = player;
+    }
+    player.setCords(location.x, location.y, location.z, location.phi)
+  }
+
+  function registerSocketListeners() {
+    socket.on('new location', onNewLocation);
+    socket.on('user left', (data) => {
+      console.log("got user left", data);
+      let player = players[data.id];
+      if (player) {
+        console.log("Unloading player ", data.id);
+        player.destroy();
+      }
+    })
+  }
+
+  function addUniversity(scene) {
+    // initialise loaders
+    var colladaLoader = new THREE.ColladaLoader();
+
+    // add university to the model
+    colladaLoader.load('resources/CarletonUniversity5.dae', function (collada) {
+      scene.add(collada.scene);
+    });
+  }
+
+  initSocket();
+  init();
+  registerSocketListeners();
 </script>
 <label>
     <input type="range" min="-1000" max="1000" step="1" onchange="ground.position.x = this.value">
