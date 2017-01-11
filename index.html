@@ -26,6 +26,7 @@
     LEAP: 0,
     PHONE: 1,
   };
+  let mode = modes.LEAP;
   let info, stats, socket, ground, renderer, scene, camera, controls, light, gandhi = false, yllwStrc = false, lastSend = Date.now();
 
   class Player {
@@ -234,5 +235,8 @@
     <input type="range" min="0" max="2" step="0.005" onchange="ground.scale.x = this.value">
     <input type="range" min="0" max="2" step="0.005" onchange="ground.scale.y = this.value">
 </label>
+<div style="position: fixed;background-color: red; width: 300px; height: 600px;">
+
+</div>
 </body>
 </html>
