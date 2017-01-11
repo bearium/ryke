@@ -138,11 +138,13 @@
     userLocation.updateCameraLocation(updateCameraLocation);
 
     Leap.loop({}, function (frame) {
+      if (mode !== mode.LEAP) return;
       userLocation.processLeapFrame(frame);
-      userLocation.updateCameraLocation(updateCameraLocation)
+
     });
 
     function render() {
+      userLocation.updateCameraLocation(updateCameraLocation);
       requestAnimationFrame(render);
       renderer.render(scene, camera);
       if (Date.now() - lastSend > 100) {
