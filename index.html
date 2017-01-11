@@ -137,11 +137,12 @@
     controls = new THREE.OrbitControls(camera, renderer.domElement);
     userLocation.updateCameraLocation(updateCameraLocation);
 
-    Leap.loop({}, function (frame) {
-      if (mode !== mode.LEAP) return;
-      userLocation.processLeapFrame(frame);
-
-    });
+    if (Leap) {
+      Leap.loop({}, function (frame) {
+        if (mode !== mode.LEAP) return;
+        userLocation.processLeapFrame(frame);
+      });
+    }
 
     function render() {
       userLocation.updateCameraLocation(updateCameraLocation);
@@ -237,7 +238,7 @@
     <input type="range" min="0" max="2" step="0.005" onchange="ground.scale.x = this.value">
     <input type="range" min="0" max="2" step="0.005" onchange="ground.scale.y = this.value">
 </label>
-<div style="position: fixed;background-color: red; width: 300px; height: 600px;">
+<div style="bottom:0;left:0;position: fixed;background-color: black; width: 300px; height: 600px;opacity:0.5">
 
 </div>
 </body>
