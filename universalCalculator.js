@@ -34,7 +34,7 @@ class universalCalculator {
 
     this.theta = pitch + Math.PI / 2;
 
-    this.phi += roll / 5000;
+    this.phi += roll / 50;
 
     this.x += (Math.cos(this.phi) * x / 2 - Math.sin(this.phi) * y) / 100;
     this.y += (Math.sin(this.phi) * x / 2 + Math.cos(this.phi) * y) / 100;
