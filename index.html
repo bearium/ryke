@@ -182,19 +182,14 @@
   }
 
   function checkSpecialLocations(camera) {
-
-
-
     if ((camera.position.x > -225) && (camera.position.x < -195) && (camera.position.y > -85) &&
       (camera.position.y < -55) && (yllwStrc === false)) {
-      yllwStrc = true;
-      alert("Yellow Structure, by Civils, for Civils.");
-    }
-
-    if ((camera.position.x > -95) && (camera.position.x < -75) && (camera.position.y > -330) &&
+      document.getElementById("textSpan").innerHTML = "Yellow Structure, by Civils, for Civils.";
+    } else if ((camera.position.x > -95) && (camera.position.x < -75) && (camera.position.y > -330) &&
       (camera.position.y < -310) && (gandhi === false)) {
-      gandhi = true;
-      alert("Gandhi");
+      document.getElementById("textSpan").innerHTML = "Gandhi";
+    } else {
+      document.getElementById("textSpan").innerHTML = "";
     }
   }
 
