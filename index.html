@@ -261,12 +261,14 @@
   init();
   registerSocketListeners();
 </script>
+<!-- hide ground movement sliders as they are not in use.
 <label>
     <input type="range" min="-1000" max="1000" step="1" onchange="ground.position.x = this.value">
     <input type="range" min="-1000" max="1000" step="1" onchange="ground.position.y = this.value">
     <input type="range" min="0" max="2" step="0.005" onchange="ground.scale.x = this.value">
     <input type="range" min="0" max="2" step="0.005" onchange="ground.scale.y = this.value">
 </label>
+-->
 <div id="contextTextBox" style="bottom:100px;left:0;position: fixed;background-color: black; width: 300px; height: 600px;opacity:0.5">
 <span id="textSpan" style="color:white;opacity:1">Hello</span>
 </div>
