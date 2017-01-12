@@ -83,6 +83,7 @@
     controls.lookVertical	= true;
 
     function setOrientationControls(e) {
+      mode = modes.PHONE;
       // If device orientation is not available, return.
       if (!e.alpha) {
           return;
