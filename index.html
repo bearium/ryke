@@ -30,7 +30,7 @@
     PHONE: 1,
   };
   let mode = modes.LEAP;
-  let info, stats, socket, ground, renderer, scene, camera, controls, light, gandhi = false, yllwStrc = false, lastSend = Date.now();
+  let effect, info, stats, socket, ground, renderer, scene, camera, controls, light, gandhi = false, yllwStrc = false, lastSend = Date.now();
 
   class Player {
     constructor(scene, id) {
@@ -97,10 +97,6 @@
       window.removeEventListener('deviceorientation', setOrientationControls, true);
      }
     window.addEventListener('deviceorientation', setOrientationControls, true);
-
-    //Resize page.
-    window.addEventListener('resize', resize, false);
-    setTimeout(resize, 1);
 
     document.body.style.backgroundColor = "lightBlue";
 
