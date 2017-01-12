@@ -168,7 +168,7 @@
     window.addEventListener('deviceorientation', setOrientationControls, true);
 
 
-    if (Leap) {
+    if (typeof Leap !== 'undefined') {
       Leap.loop({}, function (frame) {
         if (mode !== modes.LEAP) return;
         userLocation.processLeapFrame(frame);
