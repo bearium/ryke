@@ -73,32 +73,10 @@
     renderer = new THREE.WebGLRenderer({antialias: true, alpha: 1, clearColor: 0xffffff});
     renderer.shadowMap.enabled = true;
     renderer.setSize(window.innerWidth, window.innerHeight);
-    document.body.appendChild(renderer.domElement);
+    let element = renderer.domElement;
+    document.body.appendChild(element);
     scene = new THREE.Scene();
     effect = new THREE.StereoEffect(renderer);
-
-    controls = new THREE.FirstPersonControls( camera );
-    controls.movementSpeed	= 20;
-    controls.lookSpeed	= 0.05;
-    controls.lookVertical	= true;
-
-    function setOrientationControls(e) {
-      mode = modes.PHONE;
-      // If device orientation is not available, return.
-      if (!e.alpha) {
-          return;
-      }
-
-      // Create controls for mobile.
-      controls = new THREE.DeviceOrientationControls(camera, true);
-      controls.connect();
-      controls.update();
-
-      element.addEventListener('click', fullscreen, false);
-
-      window.removeEventListener('deviceorientation', setOrientationControls, true);
-     }
-    window.addEventListener('deviceorientation', setOrientationControls, true);
 
     document.body.style.backgroundColor = "lightBlue";
 
@@ -162,8 +140,31 @@
     var axisHelper = new THREE.AxisHelper(1000);
     scene.add(axisHelper);
     camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 1, 5000);
-    controls = new THREE.OrbitControls(camera, renderer.domElement);
     userLocation.updateCameraLocation(updateCameraLocation);
+    // controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls = new THREE.FirstPersonControls( camera );
+    controls.movementSpeed	= 20;
+    controls.lookSpeed	= 0.05;
+    controls.lookVertical	= true;
+
+    function setOrientationControls(e) {
+      mode = modes.PHONE;
+      // If device orientation is not available, return.
+      if (!e.alpha) {
+        return;
+      }
+
+      // Create controls for mobile.
+      controls = new THREE.DeviceOrientationControls(camera, true);
+      controls.connect();
+      controls.update();
+
+      element.addEventListener('click', fullscreen, false);
+
+      window.removeEventListener('deviceorientation', setOrientationControls, true);
+    }
+    window.addEventListener('deviceorientation', setOrientationControls, true);
+
 
     if (Leap) {
       Leap.loop({}, function (frame) {
