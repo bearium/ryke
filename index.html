@@ -31,6 +31,7 @@
   };
   let mode = modes.LEAP;
   let effect, info, stats, socket, ground, renderer, scene, camera, controls, light, gandhi = false, yllwStrc = false, lastSend = Date.now();
+  let clock = new THREE.Clock();
 
   class Player {
     constructor(scene, id) {
@@ -197,7 +198,7 @@
         light.position.set(x, y, z);
       } else {
         camera.updateProjectionMatrix();
-        controls.update(dt);
+        controls.update(clock.getDelta());
       }
   }
 
