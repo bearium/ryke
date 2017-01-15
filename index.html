@@ -22,7 +22,7 @@
 <script src="https://threejs.org/examples/js/controls/DeviceOrientationControls.js"></script>
 <script src="https://threejs.org/examples/js/controls/FirstPersonControls.js"></script>
 <script>
-  let userLocation = new universalCalculator(103, 300, -355, Math.PI/2, 0);
+  let userLocation = new universalCalculator(0, 20, 0, Math.PI/2, 0);
   let id = Date.now();
   let players = [];
   let modes = {
@@ -142,6 +142,7 @@
 
     var axisHelper = new THREE.AxisHelper(1000);
     scene.add(axisHelper);
+    axisHelper.position.y = 14;
     camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 1, 5000);
     userLocation.updateCameraLocation(updateCameraLocation);
     // controls = new THREE.OrbitControls(camera, renderer.domElement);
@@ -150,7 +151,8 @@
     controls.lookSpeed	= 0.05;
     controls.lookVertical	= true;
 
-    if (Leap) {
+    if (typeof Leap !== "undefined") {
+      mode = modes.LEAP;
       Leap.loop({}, function (frame) {
         if (mode !== modes.LEAP) return;
         userLocation.processLeapFrame(frame);
@@ -158,6 +160,7 @@
     }
 
     function setOrientationControls(e) {
+      console.log("Got device orentation controls, setting mode to phone");
       mode = modes.PHONE;
       // If device orientation is not available, return.
       if (!e.alpha) {
@@ -175,14 +178,6 @@
     }
     window.addEventListener('deviceorientation', setOrientationControls, true);
 
-
-    if (typeof Leap !== 'undefined') {
-      Leap.loop({}, function (frame) {
-        if (mode !== modes.LEAP) return;
-        userLocation.processLeapFrame(frame);
-      });
-    }
-
     function render() {
       userLocation.updateCameraLocation(updateCameraLocation);
       requestAnimationFrame(render);
@@ -198,23 +193,25 @@
 
     render();
     //controls.update();
-    Leap.loopController.setBackground(true);
+
+    if (typeof Leap !== "undefined") {
+      Leap.loopController.setBackground(true);
+    }
   }
 
   function updateCameraLocation(x, y, z, phi, theta) {
-      if (mode === modes.LEAP){
-        camera.position.x = x;
-        camera.position.y = y;
-        camera.position.z = z;
-        light.position.set(camera.position.x, camera.position.y, camera.position.z);
-        camera.rotation.y = phi;
-        camera.rotation.x = /*theta ||*/ Math.PI / 2;
-        camera.rotation.z = 0;
-        light.position.set(x, y, z);
-      } else {
-        camera.updateProjectionMatrix();
-        controls.update(clock.getDelta());
-      }
+    if (mode === modes.LEAP){
+      camera.position.x = x;
+      camera.position.y = y;
+      camera.position.z = z;
+      camera.rotation.y = phi;
+      camera.rotation.x = /*theta ||*/ 0;
+      camera.rotation.z = 0;
+      light.position.set(x, y, z);
+    } else {
+      camera.updateProjectionMatrix();
+      controls.update(clock.getDelta());
+    }
   }
 
   function initSocket() {

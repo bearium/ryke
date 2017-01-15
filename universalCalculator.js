@@ -29,16 +29,16 @@ class universalCalculator {
 
     let position = hand.palmPosition;
     let x = position[0];
-    let y = -position[2];
-    let z = position[1] - 200;
+    let y = position[1]-200;
+    let z = position[2];
 
-    this.theta = pitch + Math.PI / 2;
+    this.phi += roll / 100;
 
-    this.phi += roll / 50;
+    this.theta = pitch;
 
-    this.x += (Math.cos(this.phi) * x / 2 - Math.sin(this.phi) * y) / 100;
-    this.y += (Math.sin(this.phi) * x / 2 + Math.cos(this.phi) * y) / 100;
-    this.z += z / 100;
-    if (this.z < 1) this.z = 1;
+    this.x += (Math.cos(-this.phi) * x / 2 - Math.sin(-this.phi) * z) / 100;
+    this.z += (Math.sin(-this.phi) * x / 2 + Math.cos(-this.phi) * z) / 100;
+    this.y += y / 100;
+    if (this.y < 1) this.y = 1;
   }
 }
