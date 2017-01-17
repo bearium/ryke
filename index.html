@@ -2,7 +2,7 @@
 <html lang=en>
 <head>
     <title>Ryke Carleton Exploration tool</title>
-    <meta charset=utf-8/>
+    <meta charset="UTF-8"/>
     <meta name=viewport content='user-scalable=no,width=device-width,maximum-scale=1.0,minimum-scale=1.0'/>
 </head>
 <body>
@@ -18,8 +18,14 @@
 <script src="https://threejs.org/examples/js/loaders/collada/KeyFrameAnimation.js"></script>
 <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
 <script type="text/javascript" src="universalCalculator.js"></script>
+<script src="https://threejs.org/examples/js/effects/StereoEffect.js"></script>
+<script src="https://threejs.org/examples/js/controls/DeviceOrientationControls.js"></script>
+<script src="https://threejs.org/examples/js/controls/FirstPersonControls.js"></script>
+<script type="text/javascript" src="universalCalculator.js"></script>
+<script type="text/javascript" src="config.js"></script>
 <script>
-  let userLocation = new universalCalculator(-355, -314, 103, Math.PI/2, 0);
+  let userLocation = new universalCalculator(0, 20, 0, Math.PI / 2, 0);
+  let popupText = "";
   let id = Date.now();
   let players = [];
   let modes = {
@@ -27,7 +33,8 @@
     PHONE: 1,
   };
   let mode = modes.LEAP;
-  let info, stats, socket, ground, renderer, scene, camera, controls, light, gandhi = false, yllwStrc = false, lastSend = Date.now();
+  let effect, info, stats, socket, ground, renderer, scene, camera, controls, light, gandhi = false, yllwStrc = false, lastSend = Date.now();
+  let clock = new THREE.Clock();
 
   class Player {
     constructor(scene, id) {
@@ -69,8 +76,10 @@
     renderer = new THREE.WebGLRenderer({antialias: true, alpha: 1, clearColor: 0xffffff});
     renderer.shadowMap.enabled = true;
     renderer.setSize(window.innerWidth, window.innerHeight);
-    document.body.appendChild(renderer.domElement);
+    let element = renderer.domElement;
+    document.body.appendChild(element);
     scene = new THREE.Scene();
+    effect = new THREE.StereoEffect(renderer);
 
     document.body.style.backgroundColor = "lightBlue";
 
@@ -93,9 +102,10 @@
     var geometry = new THREE.PlaneGeometry(12000, 11000);
     var plane = new THREE.Mesh(geometry, material);
     plane.rotation.z = Math.PI / 8;
-    plane.position.x = -20;
-    plane.position.y = 65;
-    plane.position.z = -1;
+    plane.rotation.x = -Math.PI / 2;
+    plane.position.z = -20;
+    plane.position.x = 65;
+    plane.position.y = -1;
     scene.add(plane);
 
     // load a resource
@@ -113,9 +123,11 @@
         var geometry = new THREE.PlaneGeometry(4096, 4096);
         ground = new THREE.Mesh(geometry, material);
         // ground.rotation.z = Math.PI / 60;
-        ground.position.x = -85;
-        ground.position.y = 83;
-        ground.scale.x = 0.43;
+        ground.position.z = -77;
+        ground.position.y = 0.75;
+        ground.position.x = -90;
+        ground.rotation.x = -Math.PI / 2;
+        ground.scale.x = 0.44;
         ground.scale.y = 0.43;
         scene.add(ground);
 
@@ -133,16 +145,42 @@
 
     var axisHelper = new THREE.AxisHelper(1000);
     scene.add(axisHelper);
+    axisHelper.position.y = 14;
     camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 1, 5000);
-    controls = new THREE.OrbitControls(camera, renderer.domElement);
     userLocation.updateCameraLocation(updateCameraLocation);
+    // controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls = new THREE.FirstPersonControls(camera);
+    controls.movementSpeed = 20;
+    controls.lookSpeed = 0.05;
+    controls.lookVertical = true;
 
-    if (Leap) {
+    if (typeof Leap !== "undefined") {
+      mode = modes.LEAP;
       Leap.loop({}, function (frame) {
         if (mode !== modes.LEAP) return;
         userLocation.processLeapFrame(frame);
       });
     }
+
+    function setOrientationControls(e) {
+      console.log("Got device orentation controls, setting mode to phone");
+      mode = modes.PHONE;
+      // If device orientation is not available, return.
+      if (!e.alpha) {
+        return;
+      }
+
+      // Create controls for mobile.
+      controls = new THREE.DeviceOrientationControls(camera, true);
+      controls.connect();
+      controls.update();
+
+      element.addEventListener('click', fullscreen, false);
+
+      window.removeEventListener('deviceorientation', setOrientationControls, true);
+    }
+
+    window.addEventListener('deviceorientation', setOrientationControls, true);
 
     function render() {
       userLocation.updateCameraLocation(updateCameraLocation);
@@ -159,18 +197,25 @@
 
     render();
     //controls.update();
-    Leap.loopController.setBackground(true);
+
+    if (typeof Leap !== "undefined") {
+      Leap.loopController.setBackground(true);
+    }
   }
 
   function updateCameraLocation(x, y, z, phi, theta) {
-    camera.position.x = x;
-    camera.position.y = y;
-    camera.position.z = z;
-    light.position.set(camera.position.x, camera.position.y, camera.position.z);
-    camera.rotation.y = phi;
-    camera.rotation.x = /*theta ||*/ Math.PI / 2;
-    camera.rotation.z = 0;
-    light.position.set(x, y, z);
+    if (mode === modes.LEAP) {
+      camera.position.x = x;
+      camera.position.y = y;
+      camera.position.z = z;
+      camera.rotation.y = phi;
+      camera.rotation.x = /*theta ||*/ 0;
+      camera.rotation.z = 0;
+      light.position.set(x, y, z);
+    } else {
+      camera.updateProjectionMatrix();
+      controls.update(clock.getDelta());
+    }
   }
 
   function initSocket() {
@@ -185,15 +230,23 @@
   }
 
   function checkSpecialLocations(camera) {
-    if ((camera.position.x > -225) && (camera.position.x < -195) && (camera.position.y > -85) &&
-      (camera.position.y < -55) && (yllwStrc === false)) {
-      document.getElementById("textSpan").innerHTML = "Yellow Structure, by Civils, for Civils.";
-    } else if ((camera.position.x > -95) && (camera.position.x < -75) && (camera.position.y > -330) &&
-      (camera.position.y < -310) && (gandhi === false)) {
-      document.getElementById("textSpan").innerHTML = "Gandhi";
-    } else {
-      document.getElementById("textSpan").innerHTML = "";
+    let newText = calculatePopUpText(camera);
+    if (newText !== popupText) {
+      document.getElementById("textSpan").innerHTML = newText;
+      popupText = newText;
     }
+  }
+
+  function calculatePopUpText(camera) {
+    let cameraPosition = camera.position;
+    for (let position of config.specialLocations) {
+      if (position.xMax > cameraPosition.x && position.xMin < cameraPosition.x
+        && position.yMax > cameraPosition.y && position.yMin < cameraPosition.y
+        && position.zMax > cameraPosition.z && position.zMin < cameraPosition.z) {
+        return position.text;
+      }
+    }
+    return "";
   }
 
   function onNewLocation(location) {
@@ -221,10 +274,11 @@
 
   function addUniversity(scene) {
     // initialise loaders
-    var colladaLoader = new THREE.ColladaLoader();
+    let colladaLoader = new THREE.ColladaLoader();
 
     // add university to the model
     colladaLoader.load('resources/CarletonUniversity5.dae', function (collada) {
+      collada.scene.rotation.x = -Math.PI / 2;
       scene.add(collada.scene);
     });
   }
@@ -240,7 +294,7 @@
     <input type="range" min="0" max="2" step="0.005" onchange="ground.scale.y = this.value">
 </label>
 <div id="contextTextBox" style="bottom:50%;left:0;position: fixed;background-color: black;opacity:0.7">
-    <span id="textSpan" style="color:white;opacity:1;line-height: center; ">Hello World</span>
+    <span id="textSpan" style="color:white;opacity:1;"></span>
 </div>
 </body>
 </html>
