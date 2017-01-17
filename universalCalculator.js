@@ -39,6 +39,6 @@ class universalCalculator {
     this.x += (Math.cos(-this.phi) * x / 2 - Math.sin(-this.phi) * z) / 100;
     this.z += (Math.sin(-this.phi) * x / 2 + Math.cos(-this.phi) * z) / 100;
     this.y += y / 100;
-    if (this.y < 1) this.y = 1;
+    if (this.y < 2) this.y = 2;
   }
 }
