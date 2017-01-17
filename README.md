@@ -1,13 +1,11 @@
 # ryke
 Hack the wall competition entry
 
-### Usage
+## Setup
 
-Requirements
-
-Webserver:
-1) apache/nginx or similar: serve static files, must be setup to serve contents of the root directory with .js and .html endings as well as everything in the resources directory
-2) node.js: Hosts the wss server.
+### Web-server:
+1. apache/nginx or similar: serve static files, must be setup to serve contents of the root directory with .js and .html endings as well as everything in the resources directory
+2. node.js: Hosts the wss server.
   
  Example Ngnix config file
  
@@ -60,7 +58,10 @@ server {
 }
 ```
 
-Websocket server installation instructions:
-1) enter the `server` directory using windows command prompt or linux terminal
-2) execute `npm install`
-3) execute `node server.js` (pm2 is highly recommended for production environments.)
+### Web-socket server installation instructions:
+1. enter the `server` directory using windows command prompt or linux terminal
+2. execute `npm install`
+3. execute `node server.js` (pm2 is highly recommended for production environments.)
+
+### Web-browser
+Must support es6, latest version of chrome and firefox have been tested for comparability.
