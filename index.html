@@ -2,7 +2,7 @@
 <html lang=en>
 <head>
     <title>Ryke Carleton Exploration tool</title>
-    <meta charset=utf-8/>
+    <meta charset="UTF-8"/>
     <meta name=viewport content='user-scalable=no,width=device-width,maximum-scale=1.0,minimum-scale=1.0'/>
 </head>
 <body>
@@ -24,7 +24,8 @@
 <script type="text/javascript" src="universalCalculator.js"></script>
 <script type="text/javascript" src="config.js"></script>
 <script>
-  let userLocation = new universalCalculator(0, 20, 0, Math.PI/2, 0);
+  let userLocation = new universalCalculator(0, 20, 0, Math.PI / 2, 0);
+  let popupText = "";
   let id = Date.now();
   let players = [];
   let modes = {
@@ -125,7 +126,7 @@
         ground.position.z = -77;
         ground.position.y = 0.75;
         ground.position.x = -90;
-        ground.rotation.x = -Math.PI/2;
+        ground.rotation.x = -Math.PI / 2;
         ground.scale.x = 0.44;
         ground.scale.y = 0.43;
         scene.add(ground);
@@ -148,10 +149,10 @@
     camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 1, 5000);
     userLocation.updateCameraLocation(updateCameraLocation);
     // controls = new THREE.OrbitControls(camera, renderer.domElement);
-    controls = new THREE.FirstPersonControls( camera );
-    controls.movementSpeed	= 20;
-    controls.lookSpeed	= 0.05;
-    controls.lookVertical	= true;
+    controls = new THREE.FirstPersonControls(camera);
+    controls.movementSpeed = 20;
+    controls.lookSpeed = 0.05;
+    controls.lookVertical = true;
 
     if (typeof Leap !== "undefined") {
       mode = modes.LEAP;
@@ -178,6 +179,7 @@
 
       window.removeEventListener('deviceorientation', setOrientationControls, true);
     }
+
     window.addEventListener('deviceorientation', setOrientationControls, true);
 
     function render() {
@@ -202,7 +204,7 @@
   }
 
   function updateCameraLocation(x, y, z, phi, theta) {
-    if (mode === modes.LEAP){
+    if (mode === modes.LEAP) {
       camera.position.x = x;
       camera.position.y = y;
       camera.position.z = z;
@@ -228,15 +230,23 @@
   }
 
   function checkSpecialLocations(camera) {
+    let newText = calculatePopUpText(camera);
+    if (newText !== popupText) {
+      document.getElementById("textSpan").innerHTML = newText;
+      popupText = newText;
+    }
+  }
+
+  function calculatePopUpText(camera) {
     let cameraPosition = camera.position;
     for (let position of config.specialLocations) {
-      for (let index of ["x", "y", "z"]) {
-        if (position[`${index}Min`] < cameraPosition[index] && position[`${index}Max`] > cameraPosition[index]) {
-          return document.getElementById("textSpan").innerHTML = position.text;
-        }
+      if (position.xMax > cameraPosition.x && position.xMin < cameraPosition.x
+        && position.yMax > cameraPosition.y && position.yMin < cameraPosition.y
+        && position.zMax > cameraPosition.z && position.zMin < cameraPosition.z) {
+        return position.text;
       }
     }
-    return document.getElementById("textSpan").innerHTML = "";
+    return "";
   }
 
   function onNewLocation(location) {
@@ -264,11 +274,11 @@
 
   function addUniversity(scene) {
     // initialise loaders
-    var colladaLoader = new THREE.ColladaLoader();
+    let colladaLoader = new THREE.ColladaLoader();
 
     // add university to the model
     colladaLoader.load('resources/CarletonUniversity5.dae', function (collada) {
-      collada.scene.rotation.x = -Math.PI/2;
+      collada.scene.rotation.x = -Math.PI / 2;
       scene.add(collada.scene);
     });
   }
@@ -283,8 +293,8 @@
     <input type="range" min="0" max="2" step="0.005" onchange="ground.scale.x = this.value">
     <input type="range" min="0" max="2" step="0.005" onchange="ground.scale.y = this.value">
 </label>
-    <div id="contextTextBox" style="bottom:50%;left:0;position: fixed;background-color: black;opacity:0.7">
-    <span id="textSpan" style="color:white;opacity:1;line-height: center; ">Hello World</span>
+<div id="contextTextBox" style="bottom:50%;left:0;position: fixed;background-color: black;opacity:0.7">
+    <span id="textSpan" style="color:white;opacity:1;"></span>
 </div>
 </body>
 </html>
