@@ -4,29 +4,39 @@
 
 class universalCalculator {
   constructor(x, y, z, phi, theta) {
-    this.x = x;
-    this.y = y;
-    this.z = z;
-    this.phi = phi;
-    this.theta = theta;
+    // Constructor variables
+    this.x = x;     // x posiont, length
+    this.y = y;     // y position, height
+    this.z = z;     // z position, width
+    this.phi = phi; // roll
+    this.theta = theta;  // pitch
   }
 
   setPosition(deltaX, deltaY, deltaZ, deltaPhi, deltaTheta) {
-
+    // Mutator function
+    this.x = deltaX;
+    this.y = deltaY;
+    this.z = deltaZ;
+    this.phi = deltaPhi;
+    this.theta = deltaTheta;
   }
 
-  updateCameraLocation(cameraUpdateFunction) {
+  updateCameraLocation(cameraUpdateFunction) { // updates user view to be proper
     cameraUpdateFunction(this.x, this.y, this.z, this.phi, this.theta);
   }
 
   processLeapFrame(frame) {
     if (frame.hands.length < 1) return;
     let hand = frame.hands[0];
+    
+    // grabStrength = slow speed/stop
     let grabStrength = hand.grabStrength;
     if (grabStrength > 0.5) return;
+    
     let pitch = hand.pitch();
     let roll = hand.roll();
 
+    // input values for position
     let position = hand.palmPosition;
     let x = position[0];
     let y = position[1]-200;
