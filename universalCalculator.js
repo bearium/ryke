@@ -32,13 +32,18 @@ class universalCalculator {
     let y = position[1]-200;
     let z = position[2];
 
+    // Controls the turning speed of the view
     this.phi += roll / 200;
 
+    // Controls height of the view
     this.theta = pitch;
 
+    // Controls actual movement, slowed by factor of 200 to make visible
     this.x += (Math.cos(-this.phi) * x / 2 - Math.sin(-this.phi) * z) / 200;
     this.z += (Math.sin(-this.phi) * x / 2 + Math.cos(-this.phi) * z) / 200;
     this.y += y / 100;
+    
+    // Sets border, cannot move past border
     if (this.y < 2) this.y = 2;
     if (this.y > 130) this.y = 130;
     if (this.x > 600) this.x = 600;
