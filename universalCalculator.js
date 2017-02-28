@@ -32,12 +32,12 @@ class universalCalculator {
     let y = position[1]-200;
     let z = position[2];
 
-    this.phi += roll / 100;
+    this.phi += roll / 200;
 
     this.theta = pitch;
 
-    this.x += (Math.cos(-this.phi) * x / 2 - Math.sin(-this.phi) * z) / 100;
-    this.z += (Math.sin(-this.phi) * x / 2 + Math.cos(-this.phi) * z) / 100;
+    this.x += (Math.cos(-this.phi) * x / 2 - Math.sin(-this.phi) * z) / 200;
+    this.z += (Math.sin(-this.phi) * x / 2 + Math.cos(-this.phi) * z) / 200;
     this.y += y / 100;
     if (this.y < 2) this.y = 2;
     if (this.y > 130) this.y = 130;
